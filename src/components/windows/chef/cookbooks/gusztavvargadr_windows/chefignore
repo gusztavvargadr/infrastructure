@@ -50,6 +50,7 @@ a.out
 spec/*
 spec/fixtures/*
 test/*
+test
 features/*
 examples/*
 Guardfile
