@@ -52,17 +52,9 @@ action :run do
 
   powershell_script "Wait for task '#{windows_task_name}'" do
     code <<-EOH
-      $taskName = "#{windows_task_name}"
-      while (1)
+      while ((Get-ScheduledTask -TaskName "#{windows_task_name}").State -ne "Ready")
       {
-          $stat = schtasks /query /tn $taskName |
-                      Select-String "$taskName.*?\\s(\\w+)\\s*$" |
-                      Foreach {$_.Matches[0].Groups[1].value}
-          if ($stat -ne 'Running')
-          {
-              break
-          }
-          Start-Sleep #{wait_poll}
+        Start-Sleep #{wait_poll}
       }
     EOH
     timeout new_resource.timeout

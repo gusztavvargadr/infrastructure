@@ -25,7 +25,10 @@ platforms:
 suites:
   - name: default
     run_list:
-      - recipe[gusztavvargadr_windows::default]
+      - recipe[gusztavvargadr_windows::features]
+      - recipe[gusztavvargadr_windows::chocolatey_packages]
+      - recipe[gusztavvargadr_windows::native_packages]
+      - recipe[gusztavvargadr_windows::files]
     attributes:
       gusztavvargadr_windows:
         features:
