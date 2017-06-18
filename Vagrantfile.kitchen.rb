@@ -8,16 +8,22 @@ options = {
   network: {
     bridge: ENV['VAGRANT_NETWORK_BRIDGE'],
   },
+  synced_folder: {
+    username: ENV['VAGRANT_SMB_USERNAME'],
+    password: ENV['VAGRANT_SMB_PASSWORD'],
+  }
 }
 
 Vagrant.configure('2') do |config|
   config.vm.network 'public_network', bridge: options[:network][:bridge]
 
-  config.vm.provider 'hyperv' do |hyperv|
+  config.vm.provider 'hyperv' do |hyperv, override|
     hyperv.memory = options[:provider][:memory]
     hyperv.cpus = options[:provider][:cpus]
     hyperv.differencing_disk = options[:provider][:linked_clone]
     hyperv.enable_virtualization_extensions = options[:provider][:nested_virtualization]
+
+    override.vm.synced_folder '.', '/vagrant', smb_username: options[:synced_folder][:username], smb_password: options[:synced_folder][:password]
   end
 
   config.vm.provider 'virtualbox' do |virtualbox|

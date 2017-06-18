@@ -4,7 +4,7 @@ property :iso_drive_letter, String, required: true
 default_action :mount
 
 action :mount do
-  powershell_script "Mount #{iso_path} at #{iso_drive_letter}" do
+  powershell_script "Mount '#{iso_path}' at '#{iso_drive_letter}'" do
     code <<-EOH
       $mountResult = Mount-DiskImage #{iso_path} -PassThru
       $driveLetter = ($mountResult | Get-Volume).DriveLetter
@@ -17,7 +17,7 @@ action :mount do
 end
 
 action :dismount do
-  powershell_script "Dismount #{iso_path}" do
+  powershell_script "Dismount '#{iso_path}'" do
     code <<-EOH
       Dismount-DiskImage #{iso_path}
     EOH
