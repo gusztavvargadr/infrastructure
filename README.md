@@ -15,6 +15,7 @@ TODO: dism no restart / choco with dism
 
 octopus
 TODO: clean up / unregister
+TODO: server / tentacle all options / modes
 
 dotnet
 TODO: cookbook for frameworks (include core)
