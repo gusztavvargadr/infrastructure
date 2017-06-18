@@ -1,0 +1,15 @@
+default['gusztavvargadr_octopus']['server'] = {
+  'execute_username' => '',
+  'execute_password' => '',
+  'version' => '',
+  'home_directory_path' => 'C:\\Octopus',
+  'service_username' => 'NT AUTHORITY\\SYSTEM',
+  'storage_connection_string' => 'Data Source=(local);Initial Catalog=Octopus;Integrated Security=True',
+  'web_address' => 'http://localhost:80/',
+  'web_username' => '',
+  'web_password' => '',
+  'communication_port' => 10_943,
+  'node_name' => 'server',
+  'license' => '',
+  'import' => {},
+}
