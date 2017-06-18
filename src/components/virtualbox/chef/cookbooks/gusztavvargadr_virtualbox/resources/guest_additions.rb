@@ -12,7 +12,7 @@ action :install do
 
   guest_additions_version = guest_additions_options['version']
   iso_file_name = "VBoxGuestAdditions_#{guest_additions_version}.iso"
-  iso_file_path = "#{directory_path}/#{iso_file_name}"s
+  iso_file_path = "#{directory_path}/#{iso_file_name}"
   iso_file_source_url = "http://download.virtualbox.org/virtualbox/#{guest_additions_version}/#{iso_file_name}"
 
   remote_file iso_file_path do
@@ -21,7 +21,7 @@ action :install do
   end
 
   gusztavvargadr_windows_iso iso_file_path do
-    drive_letter 'I'
+    iso_drive_letter 'I'
     action :mount
   end
 
