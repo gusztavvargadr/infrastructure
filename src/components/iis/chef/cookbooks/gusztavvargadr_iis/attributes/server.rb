@@ -11,7 +11,7 @@ default['gusztavvargadr_iis']['server'] = {
         '/quiet',
         '/norestart',
       ],
-      'directory' => 'C:/Program Files/dotnet/dotnet.exe',
+      'executable' => 'C:/Program Files/dotnet/dotnet.exe',
     },
   },
 }

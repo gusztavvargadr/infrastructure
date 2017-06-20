@@ -36,7 +36,18 @@ action :install do
     code <<-EOH
       Get-WUInstall -MicrosoftUpdate -AcceptAll -IgnoreReboot
     EOH
-    timeout 86_400
+    timeout 28_800
+    action :run
+  end
+end
+
+action :cleanup do
+  gusztavvargadr_windows_powershell_script_elevated 'Clean up Updates' do
+    code <<-EOH
+      DISM.exe /Online /Cleanup-Image /AnalyzeComponentStore
+      DISM.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+    EOH
+    timeout 28_800
     action :run
   end
 end
