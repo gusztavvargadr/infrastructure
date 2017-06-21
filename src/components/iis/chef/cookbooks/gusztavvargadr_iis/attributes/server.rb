@@ -1,7 +1,6 @@
 default['gusztavvargadr_iis']['server'] = {
   'features' => {
-    'IIS-WebServerRole' => {},
-    'IIS-ASPNET45' => {},
+    'IIS' => {},
   },
   'native_packages' => {
     '.NET Core Windows Server Hosting' => {
@@ -12,6 +11,7 @@ default['gusztavvargadr_iis']['server'] = {
         '/norestart',
       ],
       'executable' => 'C:/Program Files/dotnet/dotnet.exe',
+      'elevated' => true,
     },
   },
 }

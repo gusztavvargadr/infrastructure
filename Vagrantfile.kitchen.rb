@@ -1,6 +1,6 @@
 options = {
   provider: {
-    memory: 2048,
+    memory: 4096,
     cpus: 2,
     linked_clone: true,
     nested_virtualization: true,
