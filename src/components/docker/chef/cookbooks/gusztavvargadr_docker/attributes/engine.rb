@@ -6,8 +6,6 @@ default['gusztavvargadr_docker']['engine'] = {
         'install',
         '--quiet',
       ],
-      # 'executable' => 'C:/Program Files/dotnet/dotnet.exe',
-      # 'elevated' => 'true',
     },
   },
 }

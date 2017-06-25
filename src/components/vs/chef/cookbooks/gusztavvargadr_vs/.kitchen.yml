@@ -18,6 +18,21 @@ platforms:
       box: gusztavvargadr/w16s
 
 suites:
+  - name: 2010p
+    run_list:
+      - recipe[gusztavvargadr_windows::updates]
+      - recipe[gusztavvargadr_vs::2010_requirements]
+      - recipe[gusztavvargadr_vs::2010_professional]
+  - name: 2015c
+    run_list:
+      - recipe[gusztavvargadr_windows::updates]
+      - recipe[gusztavvargadr_vs::2015_requirements]
+      - recipe[gusztavvargadr_vs::2015_community]
+  - name: 2015p
+    run_list:
+      - recipe[gusztavvargadr_windows::updates]
+      - recipe[gusztavvargadr_vs::2015_requirements]
+      - recipe[gusztavvargadr_vs::2015_professional]
   - name: 2017c
     run_list:
       - recipe[gusztavvargadr_windows::updates]

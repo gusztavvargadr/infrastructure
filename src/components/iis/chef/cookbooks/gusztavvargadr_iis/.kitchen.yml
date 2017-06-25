@@ -20,4 +20,5 @@ platforms:
 suites:
   - name: default
     run_list:
+      - recipe[gusztavvargadr_windows::updates]
       - recipe[gusztavvargadr_iis::server]

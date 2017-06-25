@@ -17,7 +17,6 @@ default['gusztavvargadr_vs']['2017_professional'] = {
         '--includeOptional',
         '--quiet --norestart',
       ],
-      # 'executable' => '',
       'elevated' => true,
     },
   },
