@@ -3,7 +3,7 @@ default_action :install
 action :enable do
   powershell_script 'Enable Updates' do
     code <<-EOH
-      Set-Service wuauserv -StartupType Manual
+      Set-Service wuauserv -StartupType Automatic
     EOH
     action :run
   end
