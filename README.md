@@ -5,6 +5,7 @@ general
 TODO: ci flow
 TODO: ruby, chef lint, warns
 TODO: idempotence everywhere
+TODO: environment generalization with providers (vagrant, terraform)
 
 windows
 TODO: windows file from cookbook (static and template)

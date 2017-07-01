@@ -22,7 +22,7 @@ Vagrant.configure('2') do |config|
     hyperv.enable_virtualization_extensions = options[:provider][:nested_virtualization]
 
     override.vm.network 'public_network', bridge: options[:network][:bridge]
-    override.vm.synced_folder '.', '/vagrant', smb_username: options[:synced_folder][:username], smb_password: options[:synced_folder][:password]
+    override.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: options[:synced_folder][:username], smb_password: options[:synced_folder][:password]
   end
 
   config.vm.provider 'virtualbox' do |virtualbox|
