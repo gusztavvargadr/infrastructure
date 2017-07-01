@@ -1,0 +1,4 @@
+{
+  "server": true,
+  "acl_default_policy": "deny"
+}
