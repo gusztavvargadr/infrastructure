@@ -1,19 +1,33 @@
 directory = File.dirname(__FILE__)
 require "#{directory}/../../../Vagrantfile.core"
-require "#{directory}/Vagrantfile.core"
 
-server_count = 1
-
-environment = Environment.new(
-  'vault',
-  (1..server_count).map { |i| VaultServerVM.new(i) },
-  consul_address: 'server-1.consul.local:8500',
-  consul_token: '9ca03b8d53064957b5db56b1ddc43111',
-  cli_token: '-'
+Environment.defaults(
+  hostmanager: {
+    host: true,
+    guest: false,
+  },
+  vault: {
+    servers: 1,
+  }
 )
 
-environment.define do |config|
-  config.vm.define 'ui' do |ui|
+VM.defaults(
+  box: 'gusztavvargadr/u14',
+  vault: {
+    token: '-',
+  },
+  consul: {
+    address: 'server-1.consul.local:8500',
+    token: '9ca03b8d53064957b5db56b1ddc43111',
+  }
+)
+
+Environment.new(name: 'vault.local') do |environment|
+  (1..environment.options[:vault][:servers]).each do |i|
+    VaultServerVM.new(environment, vault: { index: i })
+  end
+
+  environment.vagrant.vm.define 'ui' do |ui|
     ui.vm.synced_folder '.', '/vagrant', disabled: true
 
     ui.vm.provider 'docker' do |d|
@@ -21,7 +35,7 @@ environment.define do |config|
 
       d.build_dir = 'docker/ui'
       d.env = {
-        'VAULT_URL_DEFAULT' => "https://#{target_vm.hostname(environment)}:8200",
+        'VAULT_URL_DEFAULT' => "https://#{target_vm.hostname}:8200",
         'VAULT_AUTH_DEFAULT' => 'TOKEN',
         'NODE_TLS_REJECT_UNAUTHORIZED' => 0,
       }
@@ -29,7 +43,7 @@ environment.define do |config|
     end
   end
 
-  config.vm.define 'cli' do |cli|
+  environment.vagrant.vm.define 'cli' do |cli|
     cli.vm.synced_folder '.', '/vagrant', disabled: true
 
     cli.vm.provider 'docker' do |d|
@@ -37,12 +51,81 @@ environment.define do |config|
 
       d.build_dir = 'docker/cli'
       d.env = {
-        'VAULT_ADDR' => "https://#{target_vm.hostname(environment)}:8200",
-        'VAULT_TOKEN' => environment.options[:cli_token],
+        'VAULT_ADDR' => "https://#{target_vm.hostname}:8200",
+        'VAULT_TOKEN' => environment.options[:vault][:token],
       }
       d.create_args = ['--network', 'host']
       d.cmd = ['vault', 'mounts']
       d.remains_running = false
     end
+  end
+end
+
+class VaultServerVM < VM
+  def initialize(environment, options = {})
+    super(environment, options.deep_merge(name: "server-#{options[:vault][:index]}"))
+  end
+
+  def vagrant_configure
+    super
+
+    HyperVProvider.new(self)
+    VirtualBoxProvider.new(self)
+
+    FileProvisioner.new(self,
+      source: '/Windows/System32/drivers/etc/hosts',
+      destination: '/tmp/hosts',
+      run: 'always')
+    ShellProvisioner.new(self,
+      inline: 'mv /tmp/hosts /etc/hosts',
+      run: 'always')
+
+    DockerProvisioner.new(
+      self,
+      builds: [
+        {
+          path: '/vagrant/docker/cli',
+          args: '-t local/vault:cli',
+        },
+        {
+          path: '/vagrant/docker/server',
+          args: '-t local/vault:server',
+        },
+      ],
+      runs: [
+        {
+          container: 'vault-server',
+          image: 'local/vault:server',
+          args: docker_run_args,
+          cmd: 'server',
+          restart: 'unless-stopped',
+        },
+      ],
+      run: 'always'
+    )
+  end
+
+  def docker_run_args
+    args = [
+      '--network host',
+      "--hostname #{hostname}",
+      "--env 'VAULT_LOCAL_CONFIG=#{docker_run_args_local_config().to_json}'",
+      "--env 'VAULT_ADDR=https://#{hostname}:8200'",
+      "--env 'VAULT_TOKEN=#{options[:vault][:token]}'",
+    ]
+    args.join(' ')
+  end
+
+  def docker_run_args_local_config
+    {
+      backend: {
+        consul: {
+          address: options[:consul][:address],
+          scheme: 'https',
+          path: 'vault/',
+          token: options[:consul][:token],
+        },
+      },
+    }
   end
 end

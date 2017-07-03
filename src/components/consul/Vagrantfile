@@ -1,21 +1,37 @@
 directory = File.dirname(__FILE__)
 require "#{directory}/../../../Vagrantfile.core"
-require "#{directory}/Vagrantfile.core"
 
-server_count = 1
-client_count = 1
-
-environment = Environment.new(
-  'consul',
-  (1..server_count).map { |i| ConsulServerVM.new(i) } + (1..client_count).map { |i| ConsulClientVM.new(i) },
-  encrypt: 'sUi8RtZLcKoRszrsh93wHw==',
-  acl_master_token: '9ca03b8d53064957b5db56b1ddc43111',
-  acl_agent_token: '9ca03b8d53064957b5db56b1ddc43111',
-  acl_cli_token: '9ca03b8d53064957b5db56b1ddc43111'
+Environment.defaults(
+  hostmanager: {
+    host: true,
+    guest: false,
+  },
+  consul: {
+    servers: 2,
+    clients: 2,
+  }
 )
 
-environment.define do |config|
-  config.vm.define 'cli' do |cli|
+VM.defaults(
+  box: 'gusztavvargadr/u14',
+  consul: {
+    encrypt: 'sUi8RtZLcKoRszrsh93wHw==',
+    acl_master_token: '9ca03b8d53064957b5db56b1ddc43111',
+    acl_agent_token: '9ca03b8d53064957b5db56b1ddc43111',
+    acl_cli_token: '9ca03b8d53064957b5db56b1ddc43111',
+  }
+)
+
+Environment.new(name: 'consul.local') do |environment|
+  (1..environment.options[:consul][:servers]).each do |i|
+    ConsulServerVM.new(environment, consul: { index: i })
+  end
+
+  (1..environment.options[:consul][:clients]).each do |i|
+    ConsulClientVM.new(environment, consul: { index: i })
+  end
+
+  environment.vagrant.vm.define 'cli' do |cli|
     cli.vm.synced_folder '.', '/vagrant', disabled: true
 
     cli_target_vm = environment.vms[0]
@@ -23,12 +39,101 @@ environment.define do |config|
     cli.vm.provider 'docker' do |d|
       d.build_dir = 'docker/cli'
       d.env = {
-        'CONSUL_HTTP_ADDR' => "https://#{cli_target_vm.hostname(environment)}:8500",
-        'CONSUL_HTTP_TOKEN' => environment.options[:acl_cli_token],
+        'CONSUL_HTTP_ADDR' => "https://#{cli_target_vm.hostname}:8500",
+        'CONSUL_HTTP_TOKEN' => cli_target_vm.options[:consul][:acl_cli_token],
       }
       d.create_args = ['--network', 'host']
       d.cmd = ['consul', 'members']
       d.remains_running = false
     end
+  end
+end
+
+class ConsulVM < VM
+  def initialize(environment, options = {})
+    super(environment, options.deep_merge(name: "#{options[:consul][:type]}-#{options[:consul][:index]}"))
+  end
+
+  def vagrant_configure
+    super
+
+    HyperVProvider.new(self)
+    VirtualBoxProvider.new(self)
+
+    FileProvisioner.new(self,
+      source: '/Windows/System32/drivers/etc/hosts',
+      destination: '/tmp/hosts',
+      run: 'always')
+    ShellProvisioner.new(self,
+      inline: 'mv /tmp/hosts /etc/hosts',
+      run: 'always')
+
+    DockerProvisioner.new(
+      self,
+      builds: [
+        {
+          path: '/vagrant/docker/cli',
+          args: '-t local/consul:cli',
+        },
+        {
+          path: '/vagrant/docker/agent',
+          args: '-t local/consul:agent',
+        },
+        {
+          path: "/vagrant/docker/#{options[:consul][:type]}",
+          args: "-t local/consul:#{options[:consul][:type]}",
+        },
+      ],
+      runs: [
+        {
+          container: "consul-#{options[:consul][:type]}",
+          image: "local/consul:#{options[:consul][:type]}",
+          args: docker_run_args,
+          cmd: 'agent',
+          restart: 'unless-stopped',
+        },
+      ],
+      run: 'always'
+    )
+  end
+
+  def docker_run_args
+    args = [
+      '--network host',
+      "--hostname #{hostname}",
+      "--volume ~/docker/consul/#{options[:consul][:type]}/data:/consul/data",
+      '--env \'CONSUL_BIND_INTERFACE=eth0\'',
+      "--env 'CONSUL_LOCAL_CONFIG=#{docker_run_args_local_config().to_json}'",
+      "--env 'CONSUL_HTTP_ADDR=https://#{hostname}:8500'",
+      "--env 'CONSUL_HTTP_TOKEN=#{options[:consul][:acl_cli_token]}'",
+    ]
+    args.join(' ')
+  end
+
+  def docker_run_args_local_config
+    {
+      retry_join: environment.vms.select { |vm| vm.options[:consul][:type] == 'server' }.map { |svm| svm.hostname },
+      encrypt: environment.options[:consul][:encrypt],
+      acl_agent_token: environment.options[:consul][:acl_agent_token],
+    }
+  end
+end
+
+class ConsulServerVM < ConsulVM
+  def initialize(environment, options = {})
+    super(environment, options.deep_merge(consul: { type: 'server' }))
+  end
+
+  def docker_run_args_local_config
+    super.merge(
+      bootstrap_expect: environment.vms.count { |vm| vm.options[:consul][:type] == 'server' },
+      acl_master_token: options[:consul][:acl_master_token]
+    )
+  end
+end
+
+class ConsulClientVM < ConsulVM
+  def initialize(environment, options = {})
+    super(environment, options.deep_merge(consul: { type: 'client' }))
   end
 end

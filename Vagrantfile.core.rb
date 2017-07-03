@@ -1,187 +1,250 @@
 class Environment
-  @@options = {
+  @@defaults = {
+    name: 'local',
     hostmanager: {
-      host: true,
+      host: false,
       guest: false,
     },
-    domain: 'local',
   }
 
-  attr_reader :name
-  attr_reader :vms
-  attr_reader :options
-
-  def initialize(name, vms, options = {})
-    @name = name
-    @vms = vms
-    @options = @@options.merge(options)
+  def self.defaults(options = {})
+    @@defaults = @@defaults.deep_merge(options)
   end
 
-  def define
-    Vagrant.configure('2') do |config|
-      config.hostmanager.enabled = options[:hostmanager][:host] || options[:hostmanager][:guest]
-      config.hostmanager.manage_host = options[:hostmanager][:host]
-      config.hostmanager.manage_guest = options[:hostmanager][:guest]
+  attr_reader :options
+  attr_reader :vms
+  attr_reader :vagrant
 
-      @vms.each do |vm|
-        vm.define config, self
-      end
+  def initialize(options = {})
+    @options = @@defaults.deep_merge(options)
+    @vms = []
 
-      yield config
+    Vagrant.configure('2') do |vagrant|
+      @vagrant = vagrant
+
+      vagrant_configure
+
+      yield self if block_given?
     end
+  end
+
+  def vagrant_configure
+    vagrant.hostmanager.enabled = options[:hostmanager][:host] || options[:hostmanager][:guest]
+    vagrant.hostmanager.manage_host = options[:hostmanager][:host]
+    vagrant.hostmanager.manage_guest = options[:hostmanager][:guest]
   end
 end
 
 class VM
-  @@options = {
-    type: '',
+  @@defaults = {
+    name: 'default',
+    box: '',
+    autostart: true,
+    primary: false,
   }
 
-  attr_reader :name
-  attr_reader :box
-  attr_reader :providers
-  attr_reader :provisioners
+  def self.defaults(options = {})
+    @@defaults = @@defaults.deep_merge(options)
+  end
+
+  attr_reader :environment
   attr_reader :options
+  attr_reader :vagrant
 
-  def initialize(name, box, providers = [], provisioners = [], options = {})
-    @name = name
-    @box = box
-    @providers = providers
-    @provisioners = provisioners
-    @options = @@options.merge(options)
-  end
+  def initialize(environment, options = {})
+    @environment = environment
+    environment.vms.push self
+    @options = @@defaults.deep_merge(options)
 
-  def hostname(environment)
-    "#{name}.#{environment.name}.#{environment.options[:domain]}"
-  end
+    @environment.vagrant.vm.define @options[:name], vagrant_options do |vagrant|
+      @vagrant = vagrant
 
-  def define(config, environment)
-    config.vm.define name do |vm|
-      vm.vm.box = box
-      vm.vm.hostname = hostname(environment)
+      vagrant_configure
 
-      vm.vm.network 'public_network', bridge: ENV['VAGRANT_NETWORK_BRIDGE']
-      vm.vm.synced_folder '.', '/vagrant', type: 'smb', smb_username: ENV['VAGRANT_SMB_USERNAME'], smb_password: ENV['VAGRANT_SMB_PASSWORD']
-
-      providers.each do |provider|
-        provider.define vm, environment
-      end
-
-      vm.vm.provision 'file', source: '/Windows/System32/drivers/etc/hosts', destination: '/tmp/hosts', run: 'always'
-      vm.vm.provision 'shell', inline: 'mv /tmp/hosts /etc/hosts', run: 'always'
-
-      provisioners.each do |provisioner|
-        provisioner.define vm, environment
-      end
+      yield self if block_given?
     end
+  end
+
+  def vagrant_options
+    {
+      autostart: options[:autostart],
+      primary: options[:primary],
+    }
+  end
+
+  def vagrant_configure
+    vagrant.vm.box = options[:box]
+    vagrant.hostmanager.aliases = [hostname]
+  end
+
+  def hostname
+    "#{options[:name]}.#{environment.options[:name]}"
   end
 end
 
 class Provider
-  @@options = {
+  @@defaults = {
+    type: '',
     memory: 1024,
     cpus: 1,
     linked_clone: true,
   }
 
-  attr_reader :type
-  attr_reader :options
-
-  def initialize(type, options = {})
-    @type = type
-    @options = @@options.merge(options)
+  def self.defaults(options = {})
+    @@defaults = @@defaults.deep_merge(options)
   end
 
-  def define(vm, environment)
-    vm.vm.provider type do |provider|
-      define_core(provider, vm, environment)
+  attr_reader :vm
+  attr_reader :options
+  attr_reader :vagrant
+  attr_reader :override
+
+  def initialize(vm, options = {})
+    @vm = vm
+    @options = @@defaults.deep_merge(options)
+
+    @vm.vagrant.vm.provider @options[:type] do |vagrant, override|
+      @vagrant = vagrant
+      @override = override
+
+      vagrant_configure
+
+      yield self if block_given?
     end
+  end
+
+  def vagrant_configure
+    vagrant.memory = options[:memory]
+    vagrant.cpus = options[:cpus]
   end
 end
 
 class HyperVProvider < Provider
-  def initialize(options = {})
-    super('hyperv', options)
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'hyperv'))
   end
 
-  def define_core(provider, vm, environment)
-    provider.vmname = vm.vm.hostname
-    provider.memory = options[:memory]
-    provider.cpus = options[:cpus]
-    provider.differencing_disk = options[:linked_clone]
+  def vagrant_configure
+    super
+
+    vagrant.vmname = vm.hostname
+    vagrant.differencing_disk = options[:linked_clone]
+
+    override.vm.network 'public_network', bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE']
+    override.vm.synced_folder '.', '/vagrant',
+      type: 'smb',
+      smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
+      smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD']
   end
 end
 
 class VirtualBoxProvider < Provider
-  def initialize(options = {})
-    super('virtualbox', options)
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'virtualbox'))
   end
 
-  def define_core(provider, vm, environment)
-    provider.name = vm.vm.hostname
-    provider.memory = options[:memory]
-    provider.cpus = options[:cpus]
-    provider.linked_clone = options[:linked_clone]
+  def vagrant_configure
+    super
+
+    vagrant.name = vm.hostname
+    vagrant.linked_clone = options[:linked_clone]
   end
 end
 
 class Provisioner
-  @@options = {
+  @@defaults = {
+    type: '',
     run: '',
   }
 
-  attr_reader :type
-  attr_reader :options
-
-  def initialize(type, options = {})
-    @type = type
-    @options = @@options.merge(options)
+  def self.defaults(options = {})
+    @@defaults = @@defaults.deep_merge(options)
   end
 
-  def define(vm, environment)
-    vm.vm.provision type, run: options[:run] do |provisioner|
-      define_core(provisioner, vm, environment)
+  attr_reader :vm
+  attr_reader :options
+  attr_reader :vagrant
+
+  def initialize(vm, options = {})
+    @vm = vm
+    @options = @@defaults.deep_merge(options)
+
+    @vm.vagrant.vm.provision @options[:type], vagrant_options do |vagrant|
+      @vagrant = vagrant
+
+      vagrant_configure
+
+      yield self if block_given?
     end
+  end
+
+  def vagrant_options
+    {
+      run: options[:run],
+    }
+  end
+
+  def vagrant_configure
+  end
+end
+
+class FileProvisioner < Provisioner
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'file'))
+  end
+
+  def vagrant_options
+    super.deep_merge(source: options[:source], destination: options[:destination])
+  end
+end
+
+class ShellProvisioner < Provisioner
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'shell'))
+  end
+
+  def vagrant_options
+    super.deep_merge(inline: options[:inline], path: options[:path])
+  end
+end
+
+class ChefSoloProvisioner < Provisioner
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'chef_solo'))
+  end
+end
+
+class ChefZeroProvisioner < Provisioner
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'chef_zero'))
   end
 end
 
 class DockerProvisioner < Provisioner
-  attr_reader :builds
-  attr_reader :runs
-
-  def initialize(builds = [], runs = [], options = {})
-    super('docker', options)
-    @builds = builds
-    @runs = runs
+  def initialize(vm, options = {})
+    super(vm, options.deep_merge(type: 'docker'))
   end
 
-  def define_core(provisioner, vm, environment)
-    builds.each do |build|
-      provisioner.build_image build[:path], args: build[:args]
+  def vagrant_configure
+    super
+
+    options[:builds].each do |build|
+      vagrant.build_image build[:path], args: build[:args]
     end
 
-    runs.each do |run|
-      run.define provisioner, vm, environment
+    options[:runs].each do |run|
+      vagrant.run run[:container],
+        image: run[:image],
+        args: run[:args],
+        cmd: run[:cmd],
+        restart: run[:restart]
     end
   end
 end
 
-class DockerProvisionerRun
-  attr_reader :container
-  attr_reader :image
-  attr_reader :restart
-
-  def initialize(container, image, restart = 'unless-stopped')
-    @container = container
-    @image = image
-    @restart = restart
-  end
-
-  def define(provisioner, vm, environment)
-    provisioner.run container,
-      image: image,
-      args: define_args(vm, environment),
-      cmd: define_cmd(vm, environment),
-      restart: restart
+class ::Hash
+  def deep_merge(other)
+    merger = proc { |key, v1, v2| Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : Array === v1 && Array === v2 ? v1 | v2 : [:undefined, nil, :nil].include?(v2) ? v1 : v2 }
+    self.merge(other.to_h, &merger)
   end
 end
