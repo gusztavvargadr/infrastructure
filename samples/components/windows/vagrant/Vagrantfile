@@ -1,0 +1,12 @@
+directory = File.dirname(__FILE__)
+require "#{directory}/../../../Vagrantfile.core"
+
+Environment.new(name: 'windows.local') do |environment|
+  VM.new(environment, name: '10', box: 'gusztavvargadr/w10e') do |_10|
+    WindowsSample.new(_10)
+  end
+
+  VM.new(environment, name: '16', box: 'gusztavvargadr/w16s') do |_10|
+    WindowsSample.new(_10)
+  end
+end

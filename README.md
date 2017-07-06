@@ -6,6 +6,11 @@ TODO: ci flow
 TODO: ruby, chef lint, warns
 TODO: idempotence everywhere
 TODO: environment generalization with providers (vagrant, terraform)
+TODO: samples for all
+
+vagrant
+TODO: env vars to options
+TODO: env name load from folder (check with kitchen)
 
 windows
 TODO: windows file from cookbook (static and template)
@@ -17,21 +22,21 @@ TODO: all packages review for idempotence
 octopus
 TODO: clean up / unregister
 TODO: server / tentacle all options / modes
-TODO: environment / tenant create
 
 dotnet
 TODO: cookbook for frameworks (include core)
 TODO: ngen
 
-vagrant
-core: multiple environments / settings
-
 consul
-# TODO: dns, forwarding
-# TODO: separate tokens
+TODO: dns, forwarding
+TODO: separate tokens
 
+vault
+TODO: ha
 -->
 
-[This repository][Infrastructure] contains common infrastructure components for .NET development.
+This repository contains infrastructure components for .NET development with Docker, Visual Studio, IIS and SQL Server on Windows.
 
-[Infrastructure]: https://github.com/gusztavvargadr/infrastructure
+- Components
+  - [Sources](src/components)
+  - [Samples](samples/components)

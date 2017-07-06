@@ -3,7 +3,6 @@ default['gusztavvargadr_iis']['server'] = {
     'IIS' => {},
   },
   'chocolatey_packages' => {
-    'dotnetcore-runtime' => {},
     'dotnetcore-windowshosting' => {},
   },
 }

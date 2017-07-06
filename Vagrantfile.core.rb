@@ -1,14 +1,14 @@
 class Environment
   @@defaults = {
-    name: 'local',
+    name: 'default.local',
     hostmanager: {
       host: false,
       guest: false,
     },
   }
 
-  def self.defaults(options = {})
-    @@defaults = @@defaults.deep_merge(options)
+  def self.defaults(defaults = {})
+    @@defaults = @@defaults.deep_merge(defaults)
   end
 
   attr_reader :options
@@ -29,9 +29,13 @@ class Environment
   end
 
   def vagrant_configure
-    vagrant.hostmanager.enabled = options[:hostmanager][:host] || options[:hostmanager][:guest]
+    vagrant.hostmanager.enabled = hostmanager_enabled?
     vagrant.hostmanager.manage_host = options[:hostmanager][:host]
     vagrant.hostmanager.manage_guest = options[:hostmanager][:guest]
+  end
+
+  def hostmanager_enabled?
+    options[:hostmanager][:host] || options[:hostmanager][:guest]
   end
 end
 
@@ -43,8 +47,8 @@ class VM
     primary: false,
   }
 
-  def self.defaults(options = {})
-    @@defaults = @@defaults.deep_merge(options)
+  def self.defaults(defaults = {})
+    @@defaults = @@defaults.deep_merge(defaults)
   end
 
   attr_reader :environment
@@ -73,8 +77,8 @@ class VM
   end
 
   def vagrant_configure
-    vagrant.vm.box = options[:box]
-    vagrant.hostmanager.aliases = [hostname]
+    vagrant.vm.box = options[:box] unless options[:box].to_s.empty?
+    vagrant.hostmanager.aliases = [hostname] if environment.hostmanager_enabled?
   end
 
   def hostname
@@ -157,8 +161,8 @@ class Provisioner
     run: '',
   }
 
-  def self.defaults(options = {})
-    @@defaults = @@defaults.deep_merge(options)
+  def self.defaults(defaults = {})
+    @@defaults = @@defaults.deep_merge(defaults)
   end
 
   attr_reader :vm

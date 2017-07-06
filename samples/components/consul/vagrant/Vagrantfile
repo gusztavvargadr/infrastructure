@@ -1,0 +1,34 @@
+directory = File.dirname(__FILE__)
+require "#{directory}/../../../Vagrantfile.core"
+require "#{directory}/../../../../src/components/consul/vagrant/Vagrantfile.core"
+
+Environment.defaults(
+  consul: {
+    servers: 1,
+    clients: 0,
+    encrypt: 'sUi8RtZLcKoRszrsh93wHw==',
+    acl_master_token: '9ca03b8d53064957b5db56b1ddc43111',
+    acl_agent_token: '9ca03b8d53064957b5db56b1ddc43111',
+    acl_cli_token: '9ca03b8d53064957b5db56b1ddc43111',
+  }
+)
+
+Environment.new(name: 'consul.local') do |environment|
+  (1..environment.options[:consul][:servers]).each do |i|
+    VM.new(environment, name: "server-#{i}", box: 'gusztavvargadr/u14') do |server|
+      LinuxSample.new(server)
+      ConsulServer.new(server)
+    end
+  end
+
+  (1..environment.options[:consul][:clients]).each do |i|
+    VM.new(environment, name: "client-#{i}", box: 'gusztavvargadr/u14') do |client|
+      LinuxSample.new(client)
+      ConsulClient.new(client)
+    end
+  end
+
+  VM.new(environment, name: 'cli') do |cli|
+    ConsulCli.new(cli)
+  end
+end
