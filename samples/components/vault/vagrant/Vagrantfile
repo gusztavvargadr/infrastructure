@@ -1,0 +1,31 @@
+directory = File.dirname(__FILE__)
+require "#{directory}/../../../Vagrantfile.core"
+require "#{directory}/../../../../src/components/vault/vagrant/Vagrantfile.core"
+
+Environment.defaults(
+  vault: {
+    servers: 1,
+    token: '14a3d335-4098-690f-79f9-053f0447fa22',
+    consul: {
+      address: 'server-1.consul.local:8500',
+      token: '9ca03b8d53064957b5db56b1ddc43111',
+    },
+  }
+)
+
+Environment.new(name: 'vault.local') do |environment|
+  (1..environment.options[:vault][:servers]).each do |i|
+    VM.new(environment, name: "server-#{i}", box: 'gusztavvargadr/u14') do |server|
+      LinuxSample.new(server)
+      VaultServer.new(server)
+    end
+  end
+
+  VM.new(environment, name: 'ui') do |ui|
+    VaultUi.new(ui)
+  end
+
+  VM.new(environment, name: 'cli') do |cli|
+    VaultCli.new(cli)
+  end
+end

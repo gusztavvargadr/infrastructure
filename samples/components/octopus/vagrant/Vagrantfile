@@ -1,0 +1,29 @@
+directory = File.dirname(__FILE__)
+require "#{directory}/../../../Vagrantfile.core"
+require "#{directory}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
+
+Environment.new(name: 'octopus.local') do |environment|
+  VM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
+    WindowsSample.new(server)
+    OctopusServer.new(
+      server,
+      'import' => {
+        'C:\\vagrant\\server\\import' => {
+          'password' => 'Vagrant42',
+        },
+      }
+    )
+  end
+
+  VM.new(environment, name: 'tentacle-iis', box: 'gusztavvargadr/w16s-iis') do |tentacle_iis|
+    WindowsSample.new(tentacle_iis)
+    OctopusTentacle.new(
+      tentacle_iis,
+      'server_web_address' => "http://#{environment.vms[0].hostname}:80/",
+      'server_api_key' => 'API-6ENORPWQM3NWT7G6P47W5USM',
+      'environment_names' => ['environment'],
+      'tenant_names' => ['tenant'],
+      'role_names' => ['role']
+    )
+  end
+end

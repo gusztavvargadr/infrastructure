@@ -29,11 +29,12 @@ suites:
       - recipe[gusztavvargadr_windows::chocolatey_packages]
       - recipe[gusztavvargadr_windows::native_packages]
       - recipe[gusztavvargadr_windows::files]
+      - recipe[gusztavvargadr_windows::updates]
     attributes:
       gusztavvargadr_windows:
         features:
           TelnetClient:
-          IIS-WebServerRole:
+          IIS:
         chocolatey_packages:
           nuget.commandline:
           terraform:

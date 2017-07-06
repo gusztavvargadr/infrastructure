@@ -29,12 +29,9 @@ action :install do
   installer_file_extension = ::File.extname(installer_file_name)
   if installer_file_extension == '.iso'
     extracted_directory_path = 'I:/'
-    powershell_script "Mount #{installer_file_path}" do
-      code <<-EOH
-        $mountResult = Mount-DiskImage #{installer_file_path.tr('/', '\\')} -PassThru -NoDriveLetter
-        mountvol I: ($mountResult | Get-Volume).UniqueId
-      EOH
-      action :run
+    gusztavvargadr_windows_iso installer_file_path do
+      iso_drive_letter 'I'
+      action :mount
     end
   else
     extracted_directory_path = "#{directory_path}/extracted"
@@ -59,6 +56,10 @@ action :install do
     gusztavvargadr_windows_iso installer_file_path do
       action :dismount
     end
+  end
+
+  directory directory_path do
+    action :delete
   end
 
   powershell_script 'Enable Firewall' do

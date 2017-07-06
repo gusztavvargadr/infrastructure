@@ -38,4 +38,8 @@ action :install do
   gusztavvargadr_windows_iso iso_file_path do
     action :dismount
   end
+
+  directory directory_path do
+    action :delete
+  end
 end

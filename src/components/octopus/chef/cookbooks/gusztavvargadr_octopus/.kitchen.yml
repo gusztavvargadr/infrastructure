@@ -33,7 +33,7 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            C:\\kitchen-test\\integration\\default\\import:
+            C:\\kitchen-test\\integration\\default\\server\\import:
               password: Vagrant42
         tentacle:
           execute_username: vagrant
@@ -41,5 +41,7 @@ suites:
           server_api_key: API-6ENORPWQM3NWT7G6P47W5USM
           environment_names:
             - environment
+          tenant_names:
+            - tenant
           role_names:
             - role

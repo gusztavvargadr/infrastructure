@@ -3,7 +3,7 @@ default_action :install
 action :enable do
   powershell_script 'Enable Updates' do
     code <<-EOH
-      Set-Service wuauserv -StartupType Manual
+      Set-Service wuauserv -StartupType Automatic
     EOH
     action :run
   end
@@ -45,7 +45,9 @@ action :cleanup do
   gusztavvargadr_windows_powershell_script_elevated 'Clean up Updates' do
     code <<-EOH
       DISM.exe /Online /Cleanup-Image /AnalyzeComponentStore
+      DISM.exe /Online /Cleanup-Image /StartComponentCleanup
       DISM.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
+      DISM.exe /Online /Cleanup-Image /AnalyzeComponentStore
     EOH
     timeout 28_800
     action :run

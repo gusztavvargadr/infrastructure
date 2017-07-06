@@ -6,7 +6,7 @@ default_action :install
 action :install do
   gusztavvargadr_windows_powershell_script_elevated "Install Feature '#{feature_name}'" do
     code <<-EOH
-      DISM.exe /Online /Enable-Feature /FeatureName:#{feature_name} /NoRestart /All
+      Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "#{feature_name}" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
     EOH
     action :run
   end
