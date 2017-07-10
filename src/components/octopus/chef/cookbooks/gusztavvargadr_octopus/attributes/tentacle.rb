@@ -9,6 +9,7 @@ default['gusztavvargadr_octopus']['tentacle'] = {
   'server_web_password' => '',
   'server_api_key' => '',
   'server_communication_port' => 10_943,
+  'server_thumbprint' => '',
   'node_name' => 'tentacle',
   'environment_names' => [],
   'tenant_names' => [],

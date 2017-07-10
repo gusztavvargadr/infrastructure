@@ -33,6 +33,7 @@ action :configure do
   server_license = server_options['license']
 
   return if server_web_username.to_s.empty?
+  return if ::File.exist?("#{server_home_directory_path}\\#{server_instance_name}.config")
 
   server_executable_file_path = 'C:\\Program Files\\Octopus Deploy\\Octopus\\Octopus.Server.exe'
   gusztavvargadr_windows_powershell_script_elevated "Configure '#{server_instance_name}'" do
@@ -50,7 +51,6 @@ action :configure do
     user server_execute_username
     password server_execute_password
     action :run
-    not_if { ::File.exist?("#{server_home_directory_path}\\#{server_instance_name}.config") }
   end
 
   web_port = URI(server_web_address).port

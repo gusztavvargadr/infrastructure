@@ -27,10 +27,7 @@ all packages review for idempotence
 
 octopus
 clean up / unregister
-server / tentacle all options / modes
-node names
 samples with real projects
-tentacle on server for import
 tentacle for running terraform / packer
 env ps for selecting matching profiles - fetch from consul / vault
 terraform chef solo
