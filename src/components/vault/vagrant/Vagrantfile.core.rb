@@ -1,26 +1,35 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../../Vagrantfile.core"
 
 class VaultServer
-  def initialize(vm)
-    vm.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../docker", '/vagrant-docker'
+  @@defaults = {
+    type: 'server',
+    synced_folder_destination: '/vagrant-parent',
+    docker_image_name: 'local/vault',
+  }
+
+  attr_reader :options
+
+  def initialize(vm, options = {})
+    @options = @@defaults.deep_merge(options)
+
+    vm.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/..", @options[:synced_folder_destination]
 
     DockerProvisioner.new(
       vm,
       builds: [
         {
-          path: '/vagrant-docker/cli',
-          args: '-t local/vault:cli',
+          path: "#{@options[:synced_folder_destination]}/docker/cli",
+          args: "-t #{@options[:docker_image_name]}:cli",
         },
         {
-          path: '/vagrant-docker/server',
-          args: '-t local/vault:server',
+          path: "#{@options[:synced_folder_destination]}/docker/#{@options[:type]}",
+          args: "-t #{@options[:docker_image_name]}:#{@options[:type]}",
         },
       ],
       runs: [
         {
-          container: 'vault-server',
-          image: 'local/vault:server',
+          container: "vault-#{@options[:docker_image_name]}",
+          image: "#{@options[:docker_image_name]}:#{@options[:type]}",
           args: docker_run_args(vm),
           cmd: 'server',
           restart: 'unless-stopped',
@@ -45,10 +54,10 @@ class VaultServer
     {
       backend: {
         consul: {
-          address: vm.environment.options[:vault][:consul][:address],
-          scheme: 'https',
-          path: 'vault/',
-          token: vm.environment.options[:vault][:consul][:token],
+          address: vm.environment.options[:consul][:address],
+          scheme: vm.environment.options[:consul][:scheme],
+          path: vm.environment.options[:consul][:path],
+          token: vm.environment.options[:consul][:token],
         },
       },
     }

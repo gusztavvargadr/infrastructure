@@ -1,3 +1,6 @@
 .vagrant
 .kitchen
 Berksfile.lock
+berks-cookbooks
+local-mode-cache
+nodes

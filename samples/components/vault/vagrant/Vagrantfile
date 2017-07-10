@@ -1,15 +1,16 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../../../Vagrantfile.core"
-require "#{directory}/../../../../src/components/vault/vagrant/Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../../src/components/vault/vagrant/Vagrantfile.core"
 
 Environment.defaults(
   vault: {
     servers: 1,
-    token: '14a3d335-4098-690f-79f9-053f0447fa22',
-    consul: {
-      address: 'server-1.consul.local:8500',
-      token: '9ca03b8d53064957b5db56b1ddc43111',
-    },
+    token: '',
+  },
+  consul: {
+    address: 'server-1.consul.local:8500',
+    scheme: 'https',
+    path: 'vault/',
+    token: '9ca03b8d53064957b5db56b1ddc43111',
   }
 )
 

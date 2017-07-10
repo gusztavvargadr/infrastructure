@@ -1,11 +1,10 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../../../Vagrantfile.core"
-require "#{directory}/../../../../src/components/consul/vagrant/Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../../src/components/consul/vagrant/Vagrantfile.core"
 
 Environment.defaults(
   consul: {
     servers: 1,
-    clients: 0,
+    clients: 1,
     encrypt: 'sUi8RtZLcKoRszrsh93wHw==',
     acl_master_token: '9ca03b8d53064957b5db56b1ddc43111',
     acl_agent_token: '9ca03b8d53064957b5db56b1ddc43111',

@@ -1,5 +1,4 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/Vagrantfile.core"
 
 Provider.defaults(memory: 4096, cpus: 2)
 

@@ -1,8 +1,6 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../Vagrantfile.core"
 
 Environment.defaults(hostmanager: { host: true, guest: false })
-Provider.defaults(memory: 2048, cpus: 2)
 
 class WindowsSample
   def initialize(vm)
