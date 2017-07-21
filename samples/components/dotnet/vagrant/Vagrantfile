@@ -4,11 +4,13 @@ Environment.new(name: 'dotnet.local') do |environment|
   VM.new(environment, name: 'core', box: 'gusztavvargadr/w16s-iis') do |core|
     WindowsSample.new(core)
 
-    core.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/..", '/vagrant-parent'
+    core.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data/core", '/vagrant-data'
 
-    ShellProvisioner.new(core, inline: 'choco install -y dotnetcore-windowshosting')
-    ShellProvisioner.new(core, inline: 'choco install -y dotnetcore-sdk')
+    ShellProvisioner.new(core, inline: 'choco install -y dotnetcore-sdk dotnetcore-windowshosting')
     ShellProvisioner.new(core, inline: 'iisreset')
+
     ShellProvisioner.new(core, inline: 'choco install -y octopustools')
+
+    # ShellProvisioner.new(core, inline: 'cd /vagrant-data; dotnet restore; dotnet build; dotnet run')
   end
 end

@@ -3,8 +3,14 @@ require "#{File.dirname(__FILE__)}/../../../../src/components/consul/vagrant/Vag
 
 Environment.defaults(
   consul: {
-    servers: 1,
-    clients: 1,
+    server: {
+      count: 1,
+      nodes: [],
+    },
+    client: {
+      count: 1,
+      nodes: [],
+    },
     encrypt: 'sUi8RtZLcKoRszrsh93wHw==',
     acl_master_token: '9ca03b8d53064957b5db56b1ddc43111',
     acl_agent_token: '9ca03b8d53064957b5db56b1ddc43111',
@@ -13,14 +19,14 @@ Environment.defaults(
 )
 
 Environment.new(name: 'consul.local') do |environment|
-  (1..environment.options[:consul][:servers]).each do |i|
+  (1..environment.options[:consul][:server][:count]).each do |i|
     VM.new(environment, name: "server-#{i}", box: 'gusztavvargadr/u14') do |server|
       LinuxSample.new(server)
       ConsulServer.new(server)
     end
   end
 
-  (1..environment.options[:consul][:clients]).each do |i|
+  (1..environment.options[:consul][:client][:count]).each do |i|
     VM.new(environment, name: "client-#{i}", box: 'gusztavvargadr/u14') do |client|
       LinuxSample.new(client)
       ConsulClient.new(client)

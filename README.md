@@ -39,6 +39,8 @@ ngen
 samples
 
 consul
+with chef cookbook
+linux / windows samples
 dns, forwarding
 separate tokens
 

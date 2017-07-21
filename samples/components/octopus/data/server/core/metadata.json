@@ -1,0 +1,8 @@
+{
+  "$type": "Octopus.Migrator.ExportProcess.ServerMetadata, Octopus.Migrator",
+  "Id": "EC2AMAZ-J9CI0E9",
+  "Name": "EC2AMAZ-J9CI0E9",
+  "Created": "2017-07-17T01:31:45.9366709+00:00",
+  "DatabaseVersion": "3.15.5",
+  "Hello": "m6tUAsoEOQPvhk/9N6nK/A==|AAAAAAAAAAAAAAAAAAAAAA=="
+}

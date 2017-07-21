@@ -4,10 +4,6 @@ Environment.new(name: 'chef.local') do |environment|
   VM.new(environment, name: 'solo', box: 'gusztavvargadr/w16s') do |solo|
     WindowsSample.new(solo)
 
-    solo.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/..", '/vagrant-parent'
-
-    ShellProvisioner.new(solo, inline: 'choco install -y chef-client')
-
     ChefSoloProvisioner.new(solo) do |chef|
       chef.vagrant.add_recipe 'gusztavvargadr_windows::chocolatey_packages'
 
@@ -24,12 +20,10 @@ Environment.new(name: 'chef.local') do |environment|
   VM.new(environment, name: 'zero', box: 'gusztavvargadr/w16s') do |zero|
     WindowsSample.new(zero)
 
-    zero.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/..", '/vagrant-parent'
+    zero.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data", '/vagrant-data'
 
-    ShellProvisioner.new(zero, inline: 'choco install -y chefdk')
-    ShellProvisioner.new(zero, inline: 'choco install -y git')
+    ShellProvisioner.new(zero, inline: 'choco install -y chefdk git')
 
-    ShellProvisioner.new(zero, inline: 'cd /vagrant-parent/data/zero; berks vendor')
-    ShellProvisioner.new(zero, inline: 'cd /vagrant-parent/data/zero; chef-client -z -c client.rb -j client.json')
+    ShellProvisioner.new(zero, inline: 'cd /vagrant-data/zero; berks vendor; chef-client -z --once -c client.rb -j client.json')
   end
 end
