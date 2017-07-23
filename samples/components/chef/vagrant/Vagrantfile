@@ -1,29 +1,23 @@
 require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
 
 Environment.new(name: 'chef.local') do |environment|
-  VM.new(environment, name: 'solo', box: 'gusztavvargadr/w16s') do |solo|
-    WindowsSample.new(solo)
-
-    ChefSoloProvisioner.new(solo) do |chef|
-      chef.vagrant.add_recipe 'gusztavvargadr_windows::chocolatey_packages'
-
-      chef.vagrant.json = {
+  WindowsSampleVM.new(environment, name: 'solo') do |solo|
+    ChefSoloProvisioner.new(
+      solo,
+      recipes: ['gusztavvargadr_windows::chocolatey_packages'],
+      json: {
         'gusztavvargadr_windows' => {
           'chocolatey_packages' => {
             'nuget.commandline' => {},
           },
         },
       }
-    end
+    )
   end
 
-  VM.new(environment, name: 'zero', box: 'gusztavvargadr/w16s') do |zero|
-    WindowsSample.new(zero)
-
+  WindowsSampleVM.new(environment, name: 'zero') do |zero|
     zero.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data", '/vagrant-data'
-
     ShellProvisioner.new(zero, inline: 'choco install -y chefdk git')
-
     ShellProvisioner.new(zero, inline: 'cd /vagrant-data/zero; berks vendor; chef-client -z --once -c client.rb -j client.json')
   end
 end

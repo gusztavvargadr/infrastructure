@@ -1,7 +1,5 @@
 require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
 
 Environment.new(name: 'iis.local') do |environment|
-  VM.new(environment, box: 'gusztavvargadr/w16s-iis') do |default|
-    WindowsSample.new(default)
-  end
+  WindowsSampleVM.new(environment, box: 'gusztavvargadr/w16s-iis')
 end

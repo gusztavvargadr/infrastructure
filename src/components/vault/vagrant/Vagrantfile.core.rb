@@ -64,17 +64,16 @@ class VaultServer
   end
 end
 
-
 class VaultUi
-  def initialize(vm)
+  def initialize(vm, options = {})
     vm.vagrant.vm.synced_folder '.', '/vagrant', disabled: true
 
-    target_vm = vm.environment.vms[0]
+    server = options[:vault][:servers][0]
 
     vm.vagrant.vm.provider 'docker' do |d|
       d.build_dir = "#{File.dirname(__FILE__)}/../docker/ui"
       d.env = {
-        'VAULT_URL_DEFAULT' => "https://#{target_vm.hostname}:8200",
+        'VAULT_URL_DEFAULT' => "https://#{server}:8200",
         'VAULT_AUTH_DEFAULT' => 'TOKEN',
         'NODE_TLS_REJECT_UNAUTHORIZED' => 0,
       }
@@ -84,16 +83,16 @@ class VaultUi
 end
 
 class VaultCli
-  def initialize(vm)
+  def initialize(vm, options = {})
     vm.vagrant.vm.synced_folder '.', '/vagrant', disabled: true
 
-    target_vm = vm.environment.vms[0]
+    server = options[:vault][:servers][0]
 
     vm.vagrant.vm.provider 'docker' do |d|
       d.build_dir = "#{File.dirname(__FILE__)}/../docker/cli"
       d.env = {
-        'VAULT_ADDR' => "https://#{target_vm.hostname}:8200",
-        'VAULT_TOKEN' => target_vm.environment.options[:vault][:token],
+        'VAULT_ADDR' => "https://#{server}:8200",
+        'VAULT_TOKEN' => vm.environment.options[:vault][:token],
       }
       d.create_args = ['--network', 'host']
       d.cmd = ['vault', 'mounts']

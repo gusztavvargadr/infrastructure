@@ -1,29 +1,57 @@
 require "#{File.dirname(__FILE__)}/../Vagrantfile.core"
 
-Environment.defaults(hostmanager: { host: true, guest: false })
+Environment.environment(hostmanager: { host: true, guest: false })
 
-class WindowsSample
-  def initialize(vm)
-    HyperVProvider.new(vm, memory: 2048, cpus: 2)
-    VirtualBoxProvider.new(vm, memory: 2048, cpus: 2)
+class WindowsSampleVM < VM
+  @@windows_sample = {
+    box: 'gusztavvargadr/w16s',
+  }
 
-    FileProvisioner.new(vm,
+  def self.windows_sample(options = {})
+    @@windows_sample = @@windows_sample.deep_merge(options)
+  end
+
+  def initialize(environment, options = {})
+    super(environment, @@windows_sample.deep_merge(options))
+  end
+
+  def vagrant_configure
+    super
+
+    HyperVProvider.new(self, memory: 2048, cpus: 2)
+    VirtualBoxProvider.new(self, memory: 2048, cpus: 2)
+
+    FileProvisioner.new(self,
       source: 'C:/Windows/System32/drivers/etc/hosts',
       destination: 'C:/Windows/System32/drivers/etc/hosts',
       run: 'always')
   end
 end
 
-class LinuxSample
-  def initialize(vm)
-    HyperVProvider.new(vm, memory: 1024, cpus: 1)
-    VirtualBoxProvider.new(vm, memory: 1024, cpus: 1)
+class UbuntuSampleVM < VM
+  @@ubuntu_sample = {
+    box: 'gusztavvargadr/u14',
+  }
 
-    FileProvisioner.new(vm,
+  def self.ubuntu_sample(options = {})
+    @@ubuntu_sample = @@ubuntu_sample.deep_merge(options)
+  end
+
+  def initialize(environment, options = {})
+    super(environment, @@ubuntu_sample.deep_merge(options))
+  end
+
+  def vagrant_configure
+    super
+
+    HyperVProvider.new(self, memory: 1024, cpus: 1)
+    VirtualBoxProvider.new(self, memory: 1024, cpus: 1)
+
+    FileProvisioner.new(self,
       source: 'C:/Windows/System32/drivers/etc/hosts',
       destination: '/tmp/etc/hosts',
       run: 'always')
-    ShellProvisioner.new(vm,
+    ShellProvisioner.new(self,
       inline: 'mv /tmp/etc/hosts /etc/hosts',
       run: 'always')
   end

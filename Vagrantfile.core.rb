@@ -1,23 +1,21 @@
 class Environment
-  @@defaults = {
-    name: 'default.local',
+  @@environment = {
+    name: 'infrastructure.local',
     hostmanager: {
       host: false,
       guest: false,
     },
   }
 
-  def self.defaults(defaults = {})
-    @@defaults = @@defaults.deep_merge(defaults)
+  def self.environment(options = {})
+    @@environment = @@environment.deep_merge(options)
   end
 
   attr_reader :options
-  attr_reader :vms
   attr_reader :vagrant
 
   def initialize(options = {})
-    @options = @@defaults.deep_merge(options)
-    @vms = []
+    @options = @@environment.deep_merge(options)
 
     Vagrant.configure('2') do |vagrant|
       @vagrant = vagrant
@@ -47,18 +45,17 @@ class VM
     primary: false,
   }
 
-  def self.defaults(defaults = {})
-    @@defaults = @@defaults.deep_merge(defaults)
+  def self.defaults(options = {})
+    @@defaults = @@defaults.deep_merge(options)
   end
 
-  attr_reader :environment
   attr_reader :options
   attr_reader :vagrant
+  attr_reader :environment
 
   def initialize(environment, options = {})
-    @environment = environment
-    environment.vms.push self
     @options = @@defaults.deep_merge(options)
+    @environment = environment
 
     @environment.vagrant.vm.define @options[:name], vagrant_options do |vagrant|
       @vagrant = vagrant
@@ -87,25 +84,25 @@ class VM
 end
 
 class Provider
-  @@defaults = {
+  @@provider = {
     type: '',
     memory: 1024,
     cpus: 1,
     linked_clone: true,
   }
 
-  def self.defaults(options = {})
-    @@defaults = @@defaults.deep_merge(options)
+  def self.provider(options = {})
+    @@provider = @@provider.deep_merge(options)
   end
 
-  attr_reader :vm
   attr_reader :options
   attr_reader :vagrant
   attr_reader :override
+  attr_reader :vm
 
   def initialize(vm, options = {})
+    @options = @@provider.deep_merge(options)
     @vm = vm
-    @options = @@defaults.deep_merge(options)
 
     @vm.vagrant.vm.provider @options[:type] do |vagrant, override|
       @vagrant = vagrant
@@ -124,8 +121,19 @@ class Provider
 end
 
 class HyperVProvider < Provider
+  @@hyperv = {
+    type: 'hyperv',
+    network_bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE'],
+    smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
+    smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD'],
+  }
+
+  def self.hyperv(options = {})
+    @@hyperv = @@hyperv.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'hyperv'))
+    super(vm, @@hyperv.deep_merge(options))
   end
 
   def vagrant_configure
@@ -134,17 +142,25 @@ class HyperVProvider < Provider
     vagrant.vmname = vm.hostname
     vagrant.differencing_disk = options[:linked_clone]
 
-    override.vm.network 'public_network', bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE']
+    override.vm.network 'public_network', bridge: options[:network_bridge]
     override.vm.synced_folder '.', '/vagrant',
       type: 'smb',
-      smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
-      smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD']
+      smb_username: options[:smb_username],
+      smb_password: options[:smb_password]
   end
 end
 
 class VirtualBoxProvider < Provider
+  @@virtualbox = {
+    type: 'virtualbox',
+  }
+
+  def self.virtualbox(options = {})
+    @@virtualbox = @@virtualbox.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'virtualbox'))
+    super(vm, @@virtualbox.deep_merge(options))
   end
 
   def vagrant_configure
@@ -156,22 +172,22 @@ class VirtualBoxProvider < Provider
 end
 
 class Provisioner
-  @@defaults = {
+  @@provisioner = {
     type: '',
     run: '',
   }
 
-  def self.defaults(defaults = {})
-    @@defaults = @@defaults.deep_merge(defaults)
+  def self.provisioner(options = {})
+    @@provisioner = @@provisioner.deep_merge(options)
   end
 
-  attr_reader :vm
   attr_reader :options
   attr_reader :vagrant
+  attr_reader :vm
 
   def initialize(vm, options = {})
+    @options = @@provisioner.deep_merge(options)
     @vm = vm
-    @options = @@defaults.deep_merge(options)
 
     @vm.vagrant.vm.provision @options[:type], vagrant_options do |vagrant|
       @vagrant = vagrant
@@ -193,8 +209,18 @@ class Provisioner
 end
 
 class FileProvisioner < Provisioner
+  @@file = {
+    type: 'file',
+    source: '',
+    destination: '',
+  }
+
+  def self.file(options = {})
+    @@file = @@file.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'file'))
+    super(vm, @@file.deep_merge(options))
   end
 
   def vagrant_options
@@ -203,8 +229,18 @@ class FileProvisioner < Provisioner
 end
 
 class ShellProvisioner < Provisioner
+  @@shell = {
+    type: 'shell',
+    inline: nil,
+    path: nil,
+  }
+
+  def self.shell(options = {})
+    @@shell = @@shell.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'shell'))
+    super(vm, @@shell.deep_merge(options))
   end
 
   def vagrant_options
@@ -213,20 +249,44 @@ class ShellProvisioner < Provisioner
 end
 
 class ChefSoloProvisioner < Provisioner
-  def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'chef_solo'))
-  end
-end
+  @@chef_solo = {
+    type: 'chef_solo',
+    recipes: [],
+    json: {},
+  }
 
-class ChefZeroProvisioner < Provisioner
+  def self.chef_solo(options = {})
+    @@chef_solo = @@chef_solo.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'chef_zero'))
+    super(vm, @@chef_solo.deep_merge(options))
+  end
+
+  def vagrant_configure
+    super
+
+    options[:recipes].each do |recipe|
+      vagrant.add_recipe recipe
+    end
+
+    vagrant.json = options[:json]
   end
 end
 
 class DockerProvisioner < Provisioner
+  @@docker = {
+    type: 'docker',
+    builds: [],
+    runs: [],
+  }
+
+  def self.defaults(options = {})
+    @@docker = @@docker.deep_merge(options)
+  end
+
   def initialize(vm, options = {})
-    super(vm, options.deep_merge(type: 'docker'))
+    super(vm, @@docker.deep_merge(options))
   end
 
   def vagrant_configure

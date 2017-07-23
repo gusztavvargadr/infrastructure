@@ -1,7 +1,7 @@
 require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
 
-Environment.defaults(
+Environment.environment(
   octopus: {
     server: {
       hostname: '',
@@ -16,9 +16,7 @@ Environment.defaults(
 )
 
 Environment.new(name: 'octopus.local') do |environment|
-  VM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
-    WindowsSample.new(server)
-
+  WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
     server.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data", '/vagrant-data'
 
     OctopusServer.new(
@@ -40,9 +38,7 @@ Environment.new(name: 'octopus.local') do |environment|
     )
   end
 
-  VM.new(environment, name: 'tentacle', box: 'gusztavvargadr/w16s') do |tentacle|
-    WindowsSample.new(tentacle)
-
+  WindowsSampleVM.new(environment, name: 'tentacle') do |tentacle|
     OctopusTentacle.new(
       tentacle,
       chef_json: {
