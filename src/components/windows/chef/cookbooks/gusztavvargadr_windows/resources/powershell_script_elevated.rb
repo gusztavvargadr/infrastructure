@@ -36,6 +36,9 @@ action :run do
     windows_task windows_task_name do
       cwd new_resource.cwd
       command windows_task_command
+      frequency :once
+      start_day '01/01/2100'
+      start_time '00:00'
       action [:create, :run]
       run_level :highest
     end
@@ -45,6 +48,9 @@ action :run do
       password new_resource.password
       cwd new_resource.cwd
       command windows_task_command
+      frequency :once
+      start_day '01/01/2100'
+      start_time '00:00'
       action [:create, :run]
       run_level :highest
     end
@@ -59,5 +65,9 @@ action :run do
     EOH
     timeout new_resource.timeout
     action :run
+  end
+
+  windows_task windows_task_name do
+    action :delete
   end
 end
