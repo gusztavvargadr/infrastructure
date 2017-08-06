@@ -1,5 +1,5 @@
-target_directory = '/Program Files/dotnet'
+executable_path = 'C:/Program Files/dotnet/dotnet.exe'
 
-describe directory(target_directory) do
+describe file(executable_path) do
   it { should exist }
 end

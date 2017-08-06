@@ -13,10 +13,10 @@ action :install do
 
   chocolatey_package_script_name = "Install Chocolatey package '#{chocolatey_package_name}'"
   chocolatey_package_script_code = "choco install #{chocolatey_package_name} --confirm"
-  chocolatey_package_script_code = "#{chocolatey_package_script_code} --version #{chocolatey_package_version}" unless chocolatey_package_version.nil?
+  chocolatey_package_script_code = "#{chocolatey_package_script_code} --version #{chocolatey_package_version}" unless chocolatey_package_version.to_s.empty?
   chocolatey_package_install.each do |chocolatey_package_install_name, chocolatey_package_install_value|
     chocolatey_package_script_code = "#{chocolatey_package_script_code} --#{chocolatey_package_install_name}"
-    chocolatey_package_script_code = "#{chocolatey_package_script_code} #{chocolatey_package_install_value}" unless chocolatey_package_install_value.nil?
+    chocolatey_package_script_code = "#{chocolatey_package_script_code} #{chocolatey_package_install_value}" unless chocolatey_package_install_value.to_s.empty?
   end
 
   if chocolatey_package_elevated

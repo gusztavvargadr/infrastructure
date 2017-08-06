@@ -1,7 +1,7 @@
 default['gusztavvargadr_octopus']['server'] = {
+  'version' => '',
   'execute_username' => '',
   'execute_password' => '',
-  'version' => '',
   'home_directory_path' => 'C:\\Octopus',
   'service_username' => 'NT AUTHORITY\\SYSTEM',
   'storage_connection_string' => 'Data Source=(local);Initial Catalog=Octopus;Integrated Security=True',

@@ -1,5 +1,5 @@
 class Environment
-  @@environment = {
+  @@core = {
     name: 'infrastructure.local',
     hostmanager: {
       host: false,
@@ -7,15 +7,15 @@ class Environment
     },
   }
 
-  def self.environment(options = {})
-    @@environment = @@environment.deep_merge(options)
+  def self.core(options = {})
+    @@core = @@core.deep_merge(options)
   end
 
   attr_reader :options
   attr_reader :vagrant
 
   def initialize(options = {})
-    @options = @@environment.deep_merge(options)
+    @options = @@core.deep_merge(options)
 
     Vagrant.configure('2') do |vagrant|
       @vagrant = vagrant
@@ -38,15 +38,15 @@ class Environment
 end
 
 class VM
-  @@defaults = {
+  @@core = {
     name: 'default',
     box: '',
     autostart: true,
     primary: false,
   }
 
-  def self.defaults(options = {})
-    @@defaults = @@defaults.deep_merge(options)
+  def self.core(options = {})
+    @@core = @@core.deep_merge(options)
   end
 
   attr_reader :options
@@ -54,7 +54,7 @@ class VM
   attr_reader :environment
 
   def initialize(environment, options = {})
-    @options = @@defaults.deep_merge(options)
+    @options = @@core.deep_merge(options)
     @environment = environment
 
     @environment.vagrant.vm.define @options[:name], vagrant_options do |vagrant|
@@ -84,15 +84,15 @@ class VM
 end
 
 class Provider
-  @@provider = {
+  @@core = {
     type: '',
     memory: 1024,
     cpus: 1,
     linked_clone: true,
   }
 
-  def self.provider(options = {})
-    @@provider = @@provider.deep_merge(options)
+  def self.core(options = {})
+    @@core = @@core.deep_merge(options)
   end
 
   attr_reader :options
@@ -101,7 +101,7 @@ class Provider
   attr_reader :vm
 
   def initialize(vm, options = {})
-    @options = @@provider.deep_merge(options)
+    @options = @@core.deep_merge(options)
     @vm = vm
 
     @vm.vagrant.vm.provider @options[:type] do |vagrant, override|
@@ -172,13 +172,13 @@ class VirtualBoxProvider < Provider
 end
 
 class Provisioner
-  @@provisioner = {
+  @@core = {
     type: '',
     run: '',
   }
 
-  def self.provisioner(options = {})
-    @@provisioner = @@provisioner.deep_merge(options)
+  def self.core(options = {})
+    @@core = @@core.deep_merge(options)
   end
 
   attr_reader :options
@@ -186,7 +186,7 @@ class Provisioner
   attr_reader :vm
 
   def initialize(vm, options = {})
-    @options = @@provisioner.deep_merge(options)
+    @options = @@core.deep_merge(options)
     @vm = vm
 
     @vm.vagrant.vm.provision @options[:type], vagrant_options do |vagrant|
@@ -281,7 +281,7 @@ class DockerProvisioner < Provisioner
     runs: [],
   }
 
-  def self.defaults(options = {})
+  def self.docker(options = {})
     @@docker = @@docker.deep_merge(options)
   end
 

@@ -2,7 +2,7 @@
 driver:
   name: vagrant
   vagrantfiles:
-    - ../../../../../../Vagrantfile.kitchen
+    - ../../../../core/chef/Vagrantfile.kitchen
 
 provisioner:
   name: chef_solo
@@ -11,7 +11,7 @@ verifier:
   name: inspec
 
 platforms:
-  - name: w
+  - name: w16s
     transport:
       name: winrm
     driver:

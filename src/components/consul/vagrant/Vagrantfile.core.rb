@@ -1,9 +1,10 @@
-require "#{File.dirname(__FILE__)}/../../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
 class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
   @@consul_agent = {
     recipes: ['consul::default'],
     consul: {
+      tls_directory: '',
       servers: [],
       encrypt: '',
       acl_agent_token: '',
@@ -23,13 +24,13 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
       'consul' => {
         'version' => '0.9.0',
         'config' => {
+          'client_addr' => '127.0.0.1',
           'options' => {
             'node_name' => vm.hostname,
-            'client_addr' => '127.0.0.1',
             'ui' => true,
-            'ca_file' => '/vagrant-data/tls/ca.cert',
-            'cert_file' => '/vagrant-data/tls/consul.cert',
-            'key_file' => '/vagrant-data/tls/consul.key',
+            'ca_file' => "#{options[:consul][:tls_directory]}/ca.cert",
+            'cert_file' => "#{options[:consul][:tls_directory]}/consul.cert",
+            'key_file' => "#{options[:consul][:tls_directory]}/consul.key",
             'verify_outgoing' => true,
             'verify_incoming_rpc' => true,
             'retry_join' => options[:consul][:servers],
@@ -72,6 +73,7 @@ class ConsulClientChefSoloProvisioner < ConsulAgentChefSoloProvisioner
       'consul' => {
         'config' => {
           'options' => {
+            'acl_token' => options[:consul][:acl_client_token],
           },
         },
       }

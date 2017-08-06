@@ -4,17 +4,9 @@ property :server_options, Hash, required: true
 default_action :install
 
 action :install do
-  server_version = server_options['version']
-
-  if server_version.to_s.empty?
-    chocolatey_package 'octopusdeploy' do
-      action :install
-    end
-  else
-    chocolatey_package 'octopusdeploy' do
-      version server_version
-      action :install
-    end
+  gusztavvargadr_windows_chocolatey_package 'octopusdeploy' do
+    chocolatey_package_options 'version' => server_options['version']
+    action :install
   end
 end
 

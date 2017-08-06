@@ -1,4 +1,4 @@
-require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
 Environment.new(name: 'chef.local') do |environment|
   WindowsSampleVM.new(environment, name: 'solo') do |solo|
@@ -16,8 +16,8 @@ Environment.new(name: 'chef.local') do |environment|
   end
 
   WindowsSampleVM.new(environment, name: 'zero') do |zero|
-    zero.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data", '/vagrant-data'
+    FileProvisioner.new(zero, source: 'chef', destination: '/tmp/vagrant/chef')
     ShellProvisioner.new(zero, inline: 'choco install -y chefdk git')
-    ShellProvisioner.new(zero, inline: 'cd /vagrant-data/zero; berks vendor; chef-client -z --once -c client.rb -j client.json')
+    ShellProvisioner.new(zero, inline: 'cd /tmp/vagrant/chef; berks vendor; chef-client -z --once -c client.rb -j client.json')
   end
 end

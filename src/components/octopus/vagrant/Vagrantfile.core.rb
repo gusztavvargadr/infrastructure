@@ -1,5 +1,4 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
 class OctopusServer
   @@defaults = {
@@ -24,7 +23,6 @@ class OctopusServer
 
     ChefSoloProvisioner.new(vm) do |chef|
       chef.vagrant.add_recipe 'gusztavvargadr_octopus::server'
-      chef.vagrant.add_recipe 'gusztavvargadr_octopus::client'
 
       chef.vagrant.json = chef_json(vm)
     end
@@ -61,7 +59,6 @@ class OctopusTentacle
 
     ChefSoloProvisioner.new(vm) do |chef|
       chef.vagrant.add_recipe 'gusztavvargadr_octopus::tentacle'
-      chef.vagrant.add_recipe 'gusztavvargadr_octopus::client'
 
       chef.vagrant.json = chef_json(vm)
     end

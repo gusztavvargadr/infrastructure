@@ -1,5 +1,4 @@
-directory = File.dirname(__FILE__)
-require "#{directory}/../../../../Berksfile.core"
+require "#{File.dirname(__FILE__)}/../../../../src/components/core/chef/Berksfile.core"
 
 gusztavvargadr_sources
 

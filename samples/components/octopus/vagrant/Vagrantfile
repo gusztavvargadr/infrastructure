@@ -1,10 +1,10 @@
-require "#{File.dirname(__FILE__)}/../../../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
 
-Environment.environment(
+Environment.core(
   octopus: {
     server: {
-      hostname: '',
+      hostname: 'server.octopus.local',
       api_key: 'API-6ENORPWQM3NWT7G6P47W5USM',
       thumbprint: '72D090FFBAD730D24084D9E68691E782ADBAAC4C',
     },
@@ -14,6 +14,8 @@ Environment.environment(
     },
   }
 )
+
+Provider.core(memory: 2048, cpus: 1)
 
 Environment.new(name: 'octopus.local') do |environment|
   WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
@@ -38,7 +40,7 @@ Environment.new(name: 'octopus.local') do |environment|
     )
   end
 
-  WindowsSampleVM.new(environment, name: 'tentacle') do |tentacle|
+  WindowsSampleVM.new(environment, name: 'tentacle', box: 'gusztavvargadr/w16s-iis') do |tentacle|
     OctopusTentacle.new(
       tentacle,
       chef_json: {

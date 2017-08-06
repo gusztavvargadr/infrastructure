@@ -1,6 +1,6 @@
-require "#{File.dirname(__FILE__)}/../Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../../../../src/components/core/vagrant/Vagrantfile.core"
 
-Environment.environment(hostmanager: { host: true, guest: false })
+Environment.core(hostmanager: { host: true, guest: false })
 
 class WindowsSampleVM < VM
   @@windows_sample = {
@@ -18,8 +18,8 @@ class WindowsSampleVM < VM
   def vagrant_configure
     super
 
-    HyperVProvider.new(self, memory: 2048, cpus: 2)
-    VirtualBoxProvider.new(self, memory: 2048, cpus: 2)
+    HyperVProvider.new(self)
+    VirtualBoxProvider.new(self)
 
     FileProvisioner.new(self,
       source: 'C:/Windows/System32/drivers/etc/hosts',
@@ -44,8 +44,8 @@ class UbuntuSampleVM < VM
   def vagrant_configure
     super
 
-    HyperVProvider.new(self, memory: 1024, cpus: 1)
-    VirtualBoxProvider.new(self, memory: 1024, cpus: 1)
+    HyperVProvider.new(self)
+    VirtualBoxProvider.new(self)
 
     FileProvisioner.new(self,
       source: 'C:/Windows/System32/drivers/etc/hosts',

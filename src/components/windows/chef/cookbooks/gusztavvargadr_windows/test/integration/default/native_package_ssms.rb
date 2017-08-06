@@ -1,5 +1,5 @@
-target_directory = '/Program Files (x86)/Microsoft SQL Server/130/Tools/Binn/ManagementStudio'
+executable_path = 'C:/Program Files (x86)/Microsoft SQL Server/130/Tools/Binn/ManagementStudio/Ssms.exe'
 
-describe directory(target_directory) do
+describe file(executable_path) do
   it { should exist }
 end

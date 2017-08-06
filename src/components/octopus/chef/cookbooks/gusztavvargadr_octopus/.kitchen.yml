@@ -2,9 +2,9 @@
 driver:
   name: vagrant
   vagrantfiles:
-    - ../../../../../../Vagrantfile.kitchen
+    - ../../../../core/chef/Vagrantfile.kitchen
   synced_folders:
-    - ["test", "/kitchen-test"]
+    - ["test", "/tmp/kitchen/test"]
 
 provisioner:
   name: chef_solo
@@ -13,18 +13,19 @@ verifier:
   name: inspec
 
 platforms:
-  - name: w
+  - name: w16s
     transport:
       name: winrm
     driver:
       box: gusztavvargadr/w16s-sql14d
 
 suites:
-  - name: polling
+  - name: client
+    run_list:
+      - recipe[gusztavvargadr_octopus::client]
+  - name: server
     run_list:
       - recipe[gusztavvargadr_octopus::server]
-      - recipe[gusztavvargadr_octopus::tentacle]
-      - recipe[gusztavvargadr_octopus::client]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -33,7 +34,21 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            C:\\kitchen-test\\integration\\default\\server\\import:
+            C:\\tmp\\kitchen\\test\\integration\\server\\core:
+              password: Vagrant42
+  - name: tentacle-polling
+    run_list:
+      - recipe[gusztavvargadr_octopus::server]
+      - recipe[gusztavvargadr_octopus::tentacle]
+    attributes:
+      gusztavvargadr_octopus:
+        server:
+          execute_username: vagrant
+          execute_password: vagrant
+          web_username: vagrant
+          web_password: Vagrant42
+          import:
+            C:\\tmp\\kitchen\\test\\integration\\server\\core:
               password: Vagrant42
         tentacle:
           execute_username: vagrant
@@ -44,12 +59,11 @@ suites:
           tenant_names:
             - tenant
           role_names:
-            - role
-  - name: listening
+            - polling
+  - name: tentacle-listening
     run_list:
       - recipe[gusztavvargadr_octopus::server]
       - recipe[gusztavvargadr_octopus::tentacle]
-      - recipe[gusztavvargadr_octopus::client]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -58,7 +72,7 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            C:\\kitchen-test\\integration\\default\\server\\import:
+            C:\\tmp\\kitchen\\test\\integration\\server\\core:
               password: Vagrant42
         tentacle:
           execute_username: vagrant
@@ -70,4 +84,4 @@ suites:
           tenant_names:
             - tenant
           role_names:
-            - role
+            - listening

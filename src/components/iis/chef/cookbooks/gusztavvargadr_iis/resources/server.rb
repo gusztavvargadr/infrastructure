@@ -1,4 +1,4 @@
-property :server_options, Hash
+property :server_options, Hash, required: true
 
 default_action :install
 

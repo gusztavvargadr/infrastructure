@@ -1,6 +1,6 @@
-require "#{File.dirname(__FILE__)}/Vagrantfile.core"
+require "#{File.dirname(__FILE__)}/../vagrant/Vagrantfile.core"
 
-Provider.defaults(memory: 4096, cpus: 2)
+Provider.core(memory: 4096, cpus: 2)
 
 Environment.new(name: 'kitchen.local') do |environment|
   VM.new(environment) do |vm|
