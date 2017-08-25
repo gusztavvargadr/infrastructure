@@ -5,7 +5,6 @@ TODOs
 
 vagrant:
 (tls)
-consul
 vault
 vb
 dotnet

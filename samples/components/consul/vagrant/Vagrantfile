@@ -32,7 +32,7 @@ Environment.new(name: 'consul.local') do |environment|
       FileProvisioner.new(server, source: "#{File.dirname(__FILE__)}/tls", destination: '/tmp/vagrant/tls')
       ShellProvisioner.new(server, inline: 'sudo rm -Rf /etc/consul/tls')
       ShellProvisioner.new(server, inline: 'sudo mv /tmp/vagrant/tls /etc/consul')
-      ShellProvisioner.new(server, inline: 'sudo chown -R consul:consul /etc/consul/tls')
+      ShellProvisioner.new(server, inline: 'sudo chmod -R +r /etc/consul/tls')
 
       ConsulServerChefSoloProvisioner.new(
         server,
@@ -46,9 +46,9 @@ Environment.new(name: 'consul.local') do |environment|
   (1..client_count).each do |i|
     vm = UbuntuSampleVM.new(environment, name: "client-u-#{i}") do |client|
       FileProvisioner.new(client, source: "#{File.dirname(__FILE__)}/tls", destination: '/tmp/vagrant/tls')
-      ShellProvisioner.new(server, inline: 'sudo rm -Rf /etc/consul/tls')
-      ShellProvisioner.new(server, inline: 'sudo mv /tmp/vagrant/tls /etc/consul')
-      ShellProvisioner.new(server, inline: 'sudo chown -R consul:consul /etc/consul/tls')
+      ShellProvisioner.new(client, inline: 'sudo rm -Rf /etc/consul/tls')
+      ShellProvisioner.new(client, inline: 'sudo mv /tmp/vagrant/tls /etc/consul')
+      ShellProvisioner.new(client, inline: 'sudo chmod -R +r /etc/consul/tls')
 
       ConsulClientChefSoloProvisioner.new(
         client,

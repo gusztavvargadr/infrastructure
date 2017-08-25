@@ -23,18 +23,19 @@ platforms:
       box: gusztavvargadr/w16s
 
 suites:
-  - name: default
+  - name: features
     run_list:
       - recipe[gusztavvargadr_windows::features]
-      - recipe[gusztavvargadr_windows::chocolatey_packages]
-      - recipe[gusztavvargadr_windows::native_packages]
-      - recipe[gusztavvargadr_windows::files]
-      - recipe[gusztavvargadr_windows::updates]
     attributes:
       gusztavvargadr_windows:
         features:
           TelnetClient:
           IIS:
+  - name: chocolatey-packages
+    run_list:
+      - recipe[gusztavvargadr_windows::chocolatey_packages]
+    attributes:
+      gusztavvargadr_windows:
         chocolatey_packages:
           nuget.commandline:
           terraform:
@@ -45,6 +46,11 @@ suites:
               params: "'/GitAndUnixToolsOnPath /NoShellIntegration'"
           powershell:
             elevated: true
+  - name: native-packages
+    run_list:
+      - recipe[gusztavvargadr_windows::native_packages]
+    attributes:
+      gusztavvargadr_windows:
         native_packages:
           .NET Core SDK:
             source: https://download.microsoft.com/download/B/9/F/B9F1AF57-C14A-4670-9973-CDF47209B5BF/dotnet-dev-win-x64.1.0.4.exe
@@ -61,8 +67,16 @@ suites:
               - /norestart
             executable: C:/Program Files (x86)/Microsoft SQL Server/130/Tools/Binn/ManagementStudio/Ssms.exe
             elevated: true
+  - name: files
+    run_list:
+      - recipe[gusztavvargadr_windows::files]
+    attributes:
+      gusztavvargadr_windows:
         files:
           /Temp/hosts:
             source: file://C:/Windows/System32/drivers/etc/hosts
           /Temp/robots.txt:
             source: https://www.google.nl/robots.txt
+  - name: updates
+    run_list:
+      - recipe[gusztavvargadr_windows::updates]

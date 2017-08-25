@@ -37,7 +37,6 @@ action :run do
       cwd new_resource.cwd
       command windows_task_command
       frequency :once
-      start_day '01/01/2100'
       start_time '00:00'
       action [:create, :run]
       run_level :highest
@@ -49,7 +48,6 @@ action :run do
       cwd new_resource.cwd
       command windows_task_command
       frequency :once
-      start_day '01/01/2100'
       start_time '00:00'
       action [:create, :run]
       run_level :highest
