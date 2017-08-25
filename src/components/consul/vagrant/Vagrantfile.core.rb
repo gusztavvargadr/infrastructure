@@ -4,7 +4,6 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
   @@consul_agent = {
     recipes: ['consul::default'],
     consul: {
-      tls_directory: '',
       servers: [],
       encrypt: '',
       acl_agent_token: '',
@@ -28,11 +27,6 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
           'options' => {
             'node_name' => vm.hostname,
             'ui' => true,
-            'ca_file' => "#{options[:consul][:tls_directory]}/ca.cert",
-            'cert_file' => "#{options[:consul][:tls_directory]}/consul.cert",
-            'key_file' => "#{options[:consul][:tls_directory]}/consul.key",
-            'verify_outgoing' => true,
-            'verify_incoming_rpc' => true,
             'retry_join' => options[:consul][:servers],
             'encrypt' => options[:consul][:encrypt],
             'acl_datacenter' => 'dc1',
@@ -50,16 +44,13 @@ class ConsulServerChefSoloProvisioner < ConsulAgentChefSoloProvisioner
       'consul' => {
         'config' => {
           'options' => {
-            'addresses' => {
-              'https' => '0.0.0.0',
-            },
-            'ports' => {
-              'https' => 8501,
-            },
             'server' => true,
             'bootstrap_expect' => options[:consul][:servers].count,
             'acl_default_policy' => 'deny',
             'acl_master_token' => options[:consul][:acl_master_token],
+            'addresses' => {
+              'http' => '0.0.0.0',
+            },
           },
         },
       }

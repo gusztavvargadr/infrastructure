@@ -9,7 +9,6 @@ token = '9ca03b8d53064957b5db56b1ddc43111'
 
 server_options = {
   consul: {
-    tls_directory: '/etc/consul/tls',
     encrypt: encrypt,
     acl_agent_token: token,
     acl_master_token: token,
@@ -18,7 +17,6 @@ server_options = {
 
 client_options = {
   consul: {
-    tls_directory: '/etc/consul/tls',
     encrypt: encrypt,
     acl_agent_token: token,
     acl_client_token: token,
@@ -29,11 +27,6 @@ Environment.new(name: 'consul.local') do |environment|
   servers = []
   (1..server_count).each do |i|
     vm = UbuntuSampleVM.new(environment, name: "server-#{i}") do |server|
-      FileProvisioner.new(server, source: "#{File.dirname(__FILE__)}/tls", destination: '/tmp/vagrant/tls')
-      ShellProvisioner.new(server, inline: 'sudo rm -Rf /etc/consul/tls')
-      ShellProvisioner.new(server, inline: 'sudo mv /tmp/vagrant/tls /etc/consul')
-      ShellProvisioner.new(server, inline: 'sudo chmod -R +r /etc/consul/tls')
-
       ConsulServerChefSoloProvisioner.new(
         server,
         server_options.deep_merge(consul: { servers: servers.map(&:hostname) })
@@ -45,11 +38,6 @@ Environment.new(name: 'consul.local') do |environment|
   clients = []
   (1..client_count).each do |i|
     vm = UbuntuSampleVM.new(environment, name: "client-u-#{i}") do |client|
-      FileProvisioner.new(client, source: "#{File.dirname(__FILE__)}/tls", destination: '/tmp/vagrant/tls')
-      ShellProvisioner.new(client, inline: 'sudo rm -Rf /etc/consul/tls')
-      ShellProvisioner.new(client, inline: 'sudo mv /tmp/vagrant/tls /etc/consul')
-      ShellProvisioner.new(client, inline: 'sudo chmod -R +r /etc/consul/tls')
-
       ConsulClientChefSoloProvisioner.new(
         client,
         client_options.deep_merge(consul: { servers: servers.map(&:hostname) })
@@ -58,8 +46,6 @@ Environment.new(name: 'consul.local') do |environment|
     clients.push vm
 
     vm = WindowsSampleVM.new(environment, name: "client-w-#{i}") do |client|
-      FileProvisioner.new(client, source: "#{File.dirname(__FILE__)}/tls", destination: '/etc/consul/tls')
-
       ConsulClientChefSoloProvisioner.new(
         client,
         client_options.deep_merge(consul: { servers: servers.map(&:hostname) })
