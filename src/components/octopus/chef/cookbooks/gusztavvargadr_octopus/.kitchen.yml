@@ -31,10 +31,13 @@ suites:
         server:
           execute_username: vagrant
           execute_password: vagrant
+          web_addresses:
+            - http://localhost
+            - http://127.0.0.1
           web_username: vagrant
           web_password: Vagrant42
           import:
-            C:\\tmp\\kitchen\\test\\integration\\server\\core:
+            C:\\tmp\\kitchen\\test\\integration\\server\\import:
               password: Vagrant42
   - name: tentacle-polling
     run_list:

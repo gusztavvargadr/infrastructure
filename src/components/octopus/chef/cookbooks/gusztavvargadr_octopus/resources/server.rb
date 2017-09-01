@@ -17,7 +17,7 @@ action :configure do
   server_home_directory_path = server_options['home_directory_path']
   server_service_username = server_options['service_username']
   server_storage_connection_string = server_options['storage_connection_string']
-  server_web_address = server_options['web_address']
+  server_web_addresses = server_options['web_addresses']
   server_web_username = server_options['web_username']
   server_web_password = server_options['web_password']
   server_communication_port = server_options['communication_port']
@@ -31,7 +31,7 @@ action :configure do
   gusztavvargadr_windows_powershell_script_elevated "Configure '#{server_instance_name}'" do
     code <<-EOH
       & "#{server_executable_file_path}" create-instance --instance "#{server_instance_name}" --config "#{server_home_directory_path}\\#{server_instance_name}.config" --console
-      & "#{server_executable_file_path}" configure --instance "#{server_instance_name}" --home "#{server_home_directory_path}" --storageConnectionString "#{server_storage_connection_string}" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{server_web_address}" --commsListenPort "#{server_communication_port}" --serverNodeName "#{server_node_name}" --console
+      & "#{server_executable_file_path}" configure --instance "#{server_instance_name}" --home "#{server_home_directory_path}" --storageConnectionString "#{server_storage_connection_string}" --upgradeCheck "False" --upgradeCheckWithStatistics "False" --webAuthenticationMode "UsernamePassword" --webForceSSL "False" --webListenPrefixes "#{server_web_addresses.join(',')}" --commsListenPort "#{server_communication_port}" --serverNodeName "#{server_node_name}" --console
       & "#{server_executable_file_path}" database --instance "#{server_instance_name}" --create --grant "#{server_service_username}" --console
       & "#{server_executable_file_path}" service --instance "#{server_instance_name}" --stop --console
       & "#{server_executable_file_path}" admin --instance "#{server_instance_name}" --username "#{server_web_username}" --password "#{server_web_password}" --console
@@ -45,12 +45,14 @@ action :configure do
     action :run
   end
 
-  web_port = URI(server_web_address).port
-  powershell_script "Enable '#{server_instance_name}' web port '#{web_port}'" do
-    code <<-EOH
-      netsh advfirewall firewall add rule "name=Octopus Server '#{server_instance_name}' Web" dir=in action=allow protocol=TCP localport=#{web_port}
-    EOH
-    action :run
+  server_web_addresses.each do |server_web_address|
+    web_port = URI(server_web_address).port
+    powershell_script "Enable '#{server_instance_name}' web port '#{web_port}'" do
+      code <<-EOH
+        netsh advfirewall firewall add rule "name=Octopus Server '#{server_instance_name}' Web" dir=in action=allow protocol=TCP localport=#{web_port}
+      EOH
+      action :run
+    end
   end
 
   powershell_script "Enable '#{server_instance_name}' communication port '#{server_communication_port}'" do

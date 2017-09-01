@@ -32,7 +32,10 @@ class OctopusServer
     options[:chef_json].deep_merge(
       'gusztavvargadr_octopus' => {
         'server' => {
-          'web_address' => "http://#{vm.hostname}:80/",
+          'web_addresses' => [
+            'http://localhost',
+            "http://#{vm.hostname}/",
+          ],
           'node_name' => vm.hostname,
         },
       }
@@ -68,7 +71,7 @@ class OctopusTentacle
     options[:chef_json].deep_merge(
       'gusztavvargadr_octopus' => {
         'tentacle' => {
-          'server_web_address' => "http://#{vm.environment.options[:octopus][:server][:hostname]}:80/",
+          'server_web_address' => "http://#{vm.environment.options[:octopus][:server][:hostname]}",
           'server_api_key' => vm.environment.options[:octopus][:server][:api_key],
           'server_thumbprint' => vm.environment.options[:octopus][:server][:thumbprint],
           'node_name' => vm.hostname,

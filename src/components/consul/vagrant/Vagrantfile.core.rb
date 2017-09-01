@@ -23,7 +23,6 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
       'consul' => {
         'version' => '0.9.0',
         'config' => {
-          'client_addr' => '127.0.0.1',
           'options' => {
             'node_name' => vm.hostname,
             'ui' => true,
@@ -43,14 +42,12 @@ class ConsulServerChefSoloProvisioner < ConsulAgentChefSoloProvisioner
     super(vm, options).deep_merge(
       'consul' => {
         'config' => {
+          'client_addr' => '0.0.0.0',
           'options' => {
             'server' => true,
             'bootstrap_expect' => options[:consul][:servers].count,
             'acl_default_policy' => 'deny',
             'acl_master_token' => options[:consul][:acl_master_token],
-            'addresses' => {
-              'http' => '0.0.0.0',
-            },
           },
         },
       }
@@ -63,6 +60,7 @@ class ConsulClientChefSoloProvisioner < ConsulAgentChefSoloProvisioner
     super(vm, options).deep_merge(
       'consul' => {
         'config' => {
+          'client_addr' => '127.0.0.1',
           'options' => {
             'acl_token' => options[:consul][:acl_client_token],
           },

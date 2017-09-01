@@ -3,6 +3,17 @@
 <!--
 TODOs
 
+consul cookbook: open ports
+octopus vagrant setup like consul
+move cookbooks from ws
+terraform for local config
+consul config cleanup (server and client addresses)
+vagrant core : private / public network optins
+virtualbox: ip lookup
+sql no sa password
+packer template generate from terraform
+0-based index for vagrant also
+
 vagrant:
 (tls)
 vault
@@ -55,7 +66,7 @@ separate tokens
 mutliple dcs
 
 vault
-ha
+ha with chef
 
 chef
 no abbreviations (e.g. gv_vs to visual studio)

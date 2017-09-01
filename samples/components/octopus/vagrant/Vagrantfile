@@ -19,7 +19,7 @@ Provider.core(memory: 2048, cpus: 1)
 
 Environment.new(name: 'octopus.local') do |environment|
   WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
-    server.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../data", '/vagrant-data'
+    server.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../core", '/vagrant-core'
 
     OctopusServer.new(
       server,
@@ -27,10 +27,7 @@ Environment.new(name: 'octopus.local') do |environment|
         'gusztavvargadr_octopus' => {
           'server' => {
             'import' => {
-              'C:\\vagrant-data\\server\\core' => {
-                'password' => 'Octopus42',
-              },
-              'C:\\vagrant-data\\server\\vagrant' => {
+              'C:\\vagrant-core\\server\\import' => {
                 'password' => 'Octopus42',
               },
             },
@@ -40,7 +37,7 @@ Environment.new(name: 'octopus.local') do |environment|
     )
   end
 
-  WindowsSampleVM.new(environment, name: 'tentacle', box: 'gusztavvargadr/w16s-iis') do |tentacle|
+  WindowsSampleVM.new(environment, name: 'tentacle', box: 'gusztavvargadr/w16s') do |tentacle|
     OctopusTentacle.new(
       tentacle,
       chef_json: {
