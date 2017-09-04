@@ -1,8 +1,0 @@
-{
-  "$type": "Octopus.Migrator.ExportProcess.ServerMetadata, Octopus.Migrator",
-  "Id": "WIN-51TTG420SAI",
-  "Name": "WIN-51TTG420SAI",
-  "Created": "2017-06-18T00:55:11.1913878+00:00",
-  "DatabaseVersion": "3.14.1",
-  "Hello": "rTl/gviAAYnZJyL4Scekvg==|AAAAAAAAAAAAAAAAAAAAAA=="
-}

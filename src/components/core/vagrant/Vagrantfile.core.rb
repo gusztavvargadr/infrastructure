@@ -1,6 +1,6 @@
 class Environment
   @@core = {
-    name: 'infrastructure.local',
+    name: 'local',
     hostmanager: {
       host: false,
       guest: false,
@@ -43,6 +43,9 @@ class VM
     box: '',
     autostart: true,
     primary: false,
+    memory: 1024,
+    cpus: 1,
+    linked_clone: true,
   }
 
   def self.core(options = {})
@@ -86,9 +89,6 @@ end
 class Provider
   @@core = {
     type: '',
-    memory: 1024,
-    cpus: 1,
-    linked_clone: true,
   }
 
   def self.core(options = {})
@@ -115,8 +115,8 @@ class Provider
   end
 
   def vagrant_configure
-    vagrant.memory = options[:memory]
-    vagrant.cpus = options[:cpus]
+    vagrant.memory = vm.options[:memory]
+    vagrant.cpus = vm.options[:cpus]
   end
 end
 
@@ -140,7 +140,7 @@ class HyperVProvider < Provider
     super
 
     vagrant.vmname = vm.hostname
-    vagrant.differencing_disk = options[:linked_clone]
+    vagrant.differencing_disk = vm.options[:linked_clone]
 
     override.vm.network 'public_network', bridge: options[:network_bridge]
     override.vm.synced_folder '.', '/vagrant',
@@ -167,7 +167,9 @@ class VirtualBoxProvider < Provider
     super
 
     vagrant.name = vm.hostname
-    vagrant.linked_clone = options[:linked_clone]
+    vagrant.linked_clone = vm.options[:linked_clone]
+
+    override.vm.network 'public_network'
   end
 end
 
@@ -266,11 +268,19 @@ class ChefSoloProvisioner < Provisioner
   def vagrant_configure
     super
 
-    options[:recipes].each do |recipe|
+    recipes.each do |recipe|
       vagrant.add_recipe recipe
     end
 
-    vagrant.json = options[:json]
+    vagrant.json = json(vm, options)
+  end
+
+  def recipes
+    options[:recipes]
+  end
+
+  def json(vm, options)
+    options[:json]
   end
 end
 

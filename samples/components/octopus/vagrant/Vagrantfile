@@ -1,52 +1,48 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
 
-Environment.core(
-  octopus: {
-    server: {
-      hostname: 'server.octopus.local',
-      api_key: 'API-6ENORPWQM3NWT7G6P47W5USM',
-      thumbprint: '72D090FFBAD730D24084D9E68691E782ADBAAC4C',
-    },
-    tentacle: {
-      environment_names: ['test'],
-      tenant_names: ['private'],
-    },
-  }
-)
+tentacle_count = 2
 
-Provider.core(memory: 2048, cpus: 1)
+server_api_key = 'API-6ENORPWQM3NWT7G6P47W5USM'
+server_thumbprint = '96195237FCE647FFE277DE7CE749264AC65DAFFF'
+
+server_options = {
+  recipes: ['gusztavvargadr_octopus_server::default'],
+}
+
+tentacle_options = {
+  recipes: ['gusztavvargadr_octopus_tentacle::default'],
+  octopus: {
+    server_api_key: server_api_key,
+    server_thumbprint: server_thumbprint,
+    environment_names: ['sandbox'],
+    tenant_names: ['private'],
+    role_names: ['tentacle'],
+  },
+}
 
 Environment.new(name: 'octopus.local') do |environment|
-  WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |server|
-    server.vagrant.vm.synced_folder "#{File.dirname(__FILE__)}/../core", '/vagrant-core'
-
-    OctopusServer.new(
-      server,
-      chef_json: {
-        'gusztavvargadr_octopus' => {
-          'server' => {
-            'import' => {
-              'C:\\vagrant-core\\server\\import' => {
-                'password' => 'Octopus42',
-              },
-            },
+  server = WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |vm|
+    OctopusServerChefSoloProvisioner.new(
+      vm,
+      server_options.deep_merge(octopus: { import:
+        {
+          'gusztavvargadr_octopus_server::import_core' => {
+            'password' => 'Octopus42',
           },
         },
-      }
+      })
     )
   end
 
-  WindowsSampleVM.new(environment, name: 'tentacle', box: 'gusztavvargadr/w16s') do |tentacle|
-    OctopusTentacle.new(
-      tentacle,
-      chef_json: {
-        'gusztavvargadr_octopus' => {
-          'tentacle' => {
-            'role_names' => ['tentacle'],
-          },
-        },
-      }
-    )
+  tentacles = []
+  (1..tentacle_count).each do |i|
+    tentacle = WindowsSampleVM.new(environment, name: "tentacle-#{i}", box: 'gusztavvargadr/w16s') do |vm|
+      OctopusTentacleChefSoloProvisioner.new(
+        vm,
+        tentacle_options.deep_merge(octopus: { server_web_address: server.hostname })
+      )
+    end
+    tentacles.push tentacle
   end
 end

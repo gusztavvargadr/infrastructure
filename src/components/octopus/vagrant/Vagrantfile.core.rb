@@ -1,83 +1,82 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
-class OctopusServer
-  @@defaults = {
-    chef_json: {
-      'gusztavvargadr_octopus' => {
-        'server' => {
-          'execute_username' => 'vagrant',
-          'execute_password' => 'vagrant',
-          'web_username' => 'vagrant',
-          'web_password' => 'Vagrant42',
-        },
-      },
+class OctopusServerChefSoloProvisioner < ChefSoloProvisioner
+  @@octopus_server = {
+    recipes: ['gusztavvargadr_octopus::server'],
+    octopus: {
+      execute_username: 'vagrant',
+      execute_password: 'vagrant',
+      web_username: 'vagrant',
+      web_password: 'Vagrant42',
+      import: {},
     },
   }
 
-  attr_reader :options
-
-  def initialize(vm, options = {})
-    @options = @@defaults.deep_merge(options)
-
-    vm.environment.options[:octopus][:server][:hostname] = vm.hostname
-
-    ChefSoloProvisioner.new(vm) do |chef|
-      chef.vagrant.add_recipe 'gusztavvargadr_octopus::server'
-
-      chef.vagrant.json = chef_json(vm)
-    end
+  def self.octopus_server(options = {})
+    @@octopus_server = @@octopus_server.deep_merge(options)
   end
 
-  def chef_json(vm)
-    options[:chef_json].deep_merge(
+  def initialize(vm, options = {})
+    super(vm, @@octopus_server.deep_merge(options))
+  end
+
+  def json(vm, options)
+    super(vm, options).deep_merge(
       'gusztavvargadr_octopus' => {
         'server' => {
+          'execute_username' => options[:octopus][:execute_username],
+          'execute_password' => options[:octopus][:execute_password],
           'web_addresses' => [
             'http://localhost',
             "http://#{vm.hostname}/",
           ],
+          'web_username' => options[:octopus][:web_username],
+          'web_password' => options[:octopus][:web_password],
           'node_name' => vm.hostname,
+          'import' => options[:octopus][:import],
         },
       }
     )
   end
 end
 
-class OctopusTentacle
-  @@defaults = {
-    chef_json: {
-      'gusztavvargadr_octopus' => {
-        'tentacle' => {
-          'execute_username' => 'vagrant',
-          'execute_password' => 'vagrant',
-        },
-      },
+class OctopusTentacleChefSoloProvisioner < ChefSoloProvisioner
+  @@octopus_tentacle = {
+    recipes: ['gusztavvargadr_octopus::tentacle'],
+    octopus: {
+      execute_username: 'vagrant',
+      execute_password: 'vagrant',
+      server_web_address: '',
+      server_api_key: '',
+      server_thumbprint: '',
+      environment_names: [],
+      tenant_names: [],
+      role_names: [],
     },
   }
 
-  attr_reader :options
-
-  def initialize(vm, options = {})
-    @options = @@defaults.deep_merge(options)
-
-    ChefSoloProvisioner.new(vm) do |chef|
-      chef.vagrant.add_recipe 'gusztavvargadr_octopus::tentacle'
-
-      chef.vagrant.json = chef_json(vm)
-    end
+  def self.octopus_server(options = {})
+    @@octopus_tentacle = @@octopus_tentacle.deep_merge(options)
   end
 
-  def chef_json(vm)
-    options[:chef_json].deep_merge(
+  def initialize(vm, options = {})
+    super(vm, @@octopus_tentacle.deep_merge(options))
+  end
+
+  def json(vm, options)
+    super(vm, options).deep_merge(
       'gusztavvargadr_octopus' => {
         'tentacle' => {
-          'server_web_address' => "http://#{vm.environment.options[:octopus][:server][:hostname]}",
-          'server_api_key' => vm.environment.options[:octopus][:server][:api_key],
-          'server_thumbprint' => vm.environment.options[:octopus][:server][:thumbprint],
+          'execute_username' => options[:octopus][:execute_username],
+          'execute_password' => options[:octopus][:execute_password],
+          'server_web_address' => "http://#{options[:octopus][:server_web_address]}",
+          'server_api_key' => options[:octopus][:server_api_key],
+          'server_thumbprint' => options[:octopus][:server_thumbprint],
           'node_name' => vm.hostname,
-          'public_host_name' => vm.hostname,
-          'environment_names' => vm.environment.options[:octopus][:tentacle][:environment_names],
-          'tenant_names' => vm.environment.options[:octopus][:tentacle][:tenant_names],
+          'public_hostname' => vm.hostname,
+          'environment_names' => options[:octopus][:environment_names],
+          'tenant_names' => options[:octopus][:tenant_names],
+          'role_names' => options[:octopus][:role_names],
         },
       }
     )

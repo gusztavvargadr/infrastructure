@@ -71,8 +71,18 @@ action :import do
 
   return if server_import.nil?
 
-  server_import.each do |server_import_directory_path, server_import_options|
-    next if server_import_directory_path.to_s.empty?
+  server_import.each do |server_import_location, server_import_options|
+    next if server_import_location.to_s.empty?
+
+    server_import_cookbook = server_import_location.split('::')[0]
+    server_import_source = server_import_location.split('::')[1]
+
+    server_import_directory_path = "#{Chef::Config[:file_cache_path]}/gusztavvargadr_octopus/server/import/#{server_import_source}"
+    remote_directory server_import_directory_path do
+      source server_import_source
+      cookbook server_import_cookbook
+      action :create
+    end
 
     server_executable_directory_path = 'C:\\Program Files\\Octopus Deploy\\Octopus'
     gusztavvargadr_windows_powershell_script_elevated "Import '#{server_instance_name}' from '#{server_import_directory_path}'" do

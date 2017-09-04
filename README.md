@@ -3,8 +3,10 @@
 <!--
 TODOs
 
+core to root src
 consul cookbook: open ports
-octopus vagrant setup like consul
+gusztavvargadr.me.local
+
 move cookbooks from ws
 terraform for local config
 consul config cleanup (server and client addresses)
@@ -13,6 +15,8 @@ virtualbox: ip lookup
 sql no sa password
 packer template generate from terraform
 0-based index for vagrant also
+dedicated test cookbooks next to actual one
+move from packer
 
 vagrant:
 (tls)

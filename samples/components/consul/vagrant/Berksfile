@@ -2,5 +2,4 @@ require "#{File.dirname(__FILE__)}/../../../../src/components/core/chef/Berksfil
 
 gusztavvargadr_sources
 
-cookbook 'consul'
-cookbook 'nssm', '= 3.0.0'
+gusztavvargadr_cookbook 'components', 'consul'

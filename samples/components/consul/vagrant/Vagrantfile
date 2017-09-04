@@ -37,7 +37,7 @@ Environment.new(name: 'consul.local') do |environment|
 
   clients = []
   (1..client_count).each do |i|
-    vm = UbuntuSampleVM.new(environment, name: "client-u-#{i}") do |client|
+    vm = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
         client_options.deep_merge(consul: { servers: servers.map(&:hostname) })
@@ -45,7 +45,7 @@ Environment.new(name: 'consul.local') do |environment|
     end
     clients.push vm
 
-    vm = WindowsSampleVM.new(environment, name: "client-w-#{i}") do |client|
+    vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
         client_options.deep_merge(consul: { servers: servers.map(&:hostname) })

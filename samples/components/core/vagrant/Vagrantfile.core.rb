@@ -5,6 +5,9 @@ Environment.core(hostmanager: { host: true, guest: false })
 class WindowsSampleVM < VM
   @@windows_sample = {
     box: 'gusztavvargadr/w16s',
+    memory: 2048,
+    cpus: 1,
+    linked_clone: true,
   }
 
   def self.windows_sample(options = {})
@@ -31,6 +34,9 @@ end
 class UbuntuSampleVM < VM
   @@ubuntu_sample = {
     box: 'gusztavvargadr/u14',
+    memory: 1024,
+    cpus: 1,
+    linked_clone: true,
   }
 
   def self.ubuntu_sample(options = {})
