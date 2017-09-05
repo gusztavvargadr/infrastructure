@@ -21,7 +21,7 @@ action :configure do
   tentacle_server_communication_port = tentacle_options['server_communication_port']
   tentacle_server_thumbprint = tentacle_options['server_thumbprint']
   tentacle_node_name = tentacle_options['node_name']
-  tentacle_public_host_name = tentacle_options['public_host_name']
+  tentacle_public_hostname = tentacle_options['public_hostname']
   tentacle_environment_names = tentacle_options['environment_names']
   tentacle_tenant_names = tentacle_options['tenant_names']
   tentacle_role_names = tentacle_options['role_names']
@@ -38,7 +38,7 @@ action :configure do
 
   executable_path = 'C:\\Program Files\\Octopus Deploy\\Tentacle\\Tentacle.exe'
   nolisten = tentacle_server_thumbprint.to_s.empty? ? 'True' : 'False'
-  public_host_name = tentacle_public_host_name.to_s.empty? ? '' : "--publicHostName \"#{tentacle_public_host_name}\""
+  public_hostname = tentacle_public_hostname.to_s.empty? ? '' : "--publicHostName \"#{tentacle_public_hostname}\""
   comms_style = tentacle_server_thumbprint.to_s.empty? ? 'TentacleActive' : 'TentaclePassive'
   credentials =
     if tentacle_server_web_username.to_s.empty?
@@ -58,7 +58,7 @@ action :configure do
       #{unless tentacle_server_thumbprint.to_s.empty?
           "& \"#{executable_path}\" configure --instance \"#{tentacle_instance_name}\" --trust \"#{tentacle_server_thumbprint}\" --console"
         end}
-      & "#{executable_path}" register-with --instance "#{tentacle_instance_name}" --server "#{tentacle_server_web_address}" --name "#{tentacle_node_name}" #{public_host_name} --comms-style "#{comms_style}" --server-comms-port "#{tentacle_server_communication_port}" #{credentials} --force #{environments} #{tenants} #{roles} --console
+      & "#{executable_path}" register-with --instance "#{tentacle_instance_name}" --server "#{tentacle_server_web_address}" --name "#{tentacle_node_name}" #{public_hostname} --comms-style "#{comms_style}" --server-comms-port "#{tentacle_server_communication_port}" #{credentials} --force #{environments} #{tenants} #{roles} --console
       & "#{executable_path}" service --instance "#{tentacle_instance_name}" --install --start --console
     EOH
     action :run

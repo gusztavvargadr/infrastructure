@@ -29,7 +29,11 @@ Environment.new(name: 'consul.local') do |environment|
     vm = UbuntuSampleVM.new(environment, name: "server-#{i}") do |server|
       ConsulServerChefSoloProvisioner.new(
         server,
-        server_options.deep_merge(consul: { servers: servers.map(&:hostname) })
+        server_options.deep_merge(
+          consul: {
+            servers: servers.map(&:hostname),
+          }
+        )
       )
     end
     servers.push vm
@@ -40,7 +44,11 @@ Environment.new(name: 'consul.local') do |environment|
     vm = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
-        client_options.deep_merge(consul: { servers: servers.map(&:hostname) })
+        client_options.deep_merge(
+          consul: {
+            servers: servers.map(&:hostname),
+          }
+        )
       )
     end
     clients.push vm
@@ -48,7 +56,11 @@ Environment.new(name: 'consul.local') do |environment|
     vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
-        client_options.deep_merge(consul: { servers: servers.map(&:hostname) })
+        client_options.deep_merge(
+          consul: {
+            servers: servers.map(&:hostname),
+          }
+        )
       )
     end
     clients.push vm
