@@ -4,7 +4,7 @@ Environment.new(name: 'chef.local') do |environment|
   WindowsSampleVM.new(environment, name: 'solo') do |solo|
     ChefSoloProvisioner.new(
       solo,
-      recipes: ['gusztavvargadr_windows::chocolatey_packages'],
+      run_list: ['recipe[gusztavvargadr_windows::chocolatey_packages]'],
       json: {
         'gusztavvargadr_windows' => {
           'chocolatey_packages' => {

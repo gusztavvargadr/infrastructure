@@ -1,27 +1,11 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/consul/vagrant/Vagrantfile.core"
 
-server_count = 1
+server_count = 2
 client_count = 1
 
 encrypt = 'sUi8RtZLcKoRszrsh93wHw=='
 token = '9ca03b8d53064957b5db56b1ddc43111'
-
-server_options = {
-  consul: {
-    encrypt: encrypt,
-    acl_agent_token: token,
-    acl_master_token: token,
-  },
-}
-
-client_options = {
-  consul: {
-    encrypt: encrypt,
-    acl_agent_token: token,
-    acl_client_token: token,
-  },
-}
 
 Environment.new(name: 'consul.local') do |environment|
   servers = []
@@ -29,11 +13,13 @@ Environment.new(name: 'consul.local') do |environment|
     vm = UbuntuSampleVM.new(environment, name: "server-#{i}") do |server|
       ConsulServerChefSoloProvisioner.new(
         server,
-        server_options.deep_merge(
-          consul: {
-            servers: servers.map(&:hostname),
-          }
-        )
+        consul: {
+          servers: servers.map(&:hostname),
+          encrypt: encrypt,
+          acl_agent_token: token,
+
+          acl_master_token: token,
+        }
       )
     end
     servers.push vm
@@ -44,11 +30,13 @@ Environment.new(name: 'consul.local') do |environment|
     vm = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
-        client_options.deep_merge(
-          consul: {
-            servers: servers.map(&:hostname),
-          }
-        )
+        consul: {
+          servers: servers.map(&:hostname),
+          encrypt: encrypt,
+          acl_agent_token: token,
+
+          acl_client_token: token,
+        }
       )
     end
     clients.push vm
@@ -56,11 +44,13 @@ Environment.new(name: 'consul.local') do |environment|
     vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
-        client_options.deep_merge(
-          consul: {
-            servers: servers.map(&:hostname),
-          }
-        )
+        consul: {
+          servers: servers.map(&:hostname),
+          encrypt: encrypt,
+          acl_agent_token: token,
+
+          acl_client_token: token,
+        }
       )
     end
     clients.push vm

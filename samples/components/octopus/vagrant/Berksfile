@@ -3,7 +3,6 @@ require "#{File.dirname(__FILE__)}/../../../../src/components/core/chef/Berksfil
 gusztavvargadr_sources
 
 cookbook 'gusztavvargadr_octopus_server', path: '../chef/cookbooks/gusztavvargadr_octopus_server'
-cookbook 'gusztavvargadr_octopus_tentacle', path: '../chef/cookbooks/gusztavvargadr_octopus_tentacle'
 
 gusztavvargadr_cookbook 'components', 'octopus'
 gusztavvargadr_cookbook 'components', 'windows'

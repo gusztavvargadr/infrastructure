@@ -2,7 +2,7 @@ require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
 class OctopusServerChefSoloProvisioner < ChefSoloProvisioner
   @@octopus_server = {
-    recipes: ['gusztavvargadr_octopus::server'],
+    run_list: ['recipe[gusztavvargadr_octopus::server]'],
     octopus: {
       execute_username: 'vagrant',
       execute_password: 'vagrant',
@@ -28,7 +28,7 @@ class OctopusServerChefSoloProvisioner < ChefSoloProvisioner
           'execute_password' => options[:octopus][:execute_password],
           'web_addresses' => [
             'http://localhost',
-            "http://#{vm.hostname}/",
+            "http://#{vm.hostname}",
           ],
           'web_username' => options[:octopus][:web_username],
           'web_password' => options[:octopus][:web_password],
@@ -42,11 +42,11 @@ end
 
 class OctopusTentacleChefSoloProvisioner < ChefSoloProvisioner
   @@octopus_tentacle = {
-    recipes: ['gusztavvargadr_octopus::tentacle'],
+    run_list: ['recipe[gusztavvargadr_octopus::tentacle]'],
     octopus: {
       execute_username: 'vagrant',
       execute_password: 'vagrant',
-      server_web_address: '',
+      server_hostname: '',
       server_api_key: '',
       server_thumbprint: '',
       environment_names: [],
@@ -69,7 +69,7 @@ class OctopusTentacleChefSoloProvisioner < ChefSoloProvisioner
         'tentacle' => {
           'execute_username' => options[:octopus][:execute_username],
           'execute_password' => options[:octopus][:execute_password],
-          'server_web_address' => "http://#{options[:octopus][:server_web_address]}",
+          'server_web_address' => "http://#{options[:octopus][:server_hostname]}",
           'server_api_key' => options[:octopus][:server_api_key],
           'server_thumbprint' => options[:octopus][:server_thumbprint],
           'node_name' => vm.hostname,

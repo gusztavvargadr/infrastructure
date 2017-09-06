@@ -7,6 +7,53 @@ core to root src
 consul cookbook: open ports
 gusztavvargadr.me.local
 
+folder hierarchy
+src
+  core
+    instance
+      core
+        (core?)
+        local
+          roles
+          cookbooks
+          (vagrant)
+        aws
+          roles
+          cookbooks
+          (terraform)
+      windows
+        local
+          (vagrant)
+        aws
+          (terraform)
+      unix
+        local
+          (vagrant)
+        aws
+          (terraform)
+    image
+      core
+  components
+    consul
+      core
+        local
+          (vagrant)
+        aws
+          (terraform)
+      client
+        local
+          (vagrant)
+        aws
+          (terraform)
+    stacks
+
+samples to follow src
+  domain and entity names
+      ...
+
+vagrant: org, domain, component, project, tenant, env
+multiple domain names per level with overrides to support aliases too
+
 move cookbooks from ws
 terraform for local config
 consul config cleanup (server and client addresses)

@@ -6,35 +6,18 @@ tentacle_count = 1
 server_api_key = 'API-6ENORPWQM3NWT7G6P47W5USM'
 server_thumbprint = '96195237FCE647FFE277DE7CE749264AC65DAFFF'
 
-server_options = {
-  recipes: ['gusztavvargadr_octopus_server::default'],
-  octopus: {
-    import: {
-      'gusztavvargadr_octopus_server::import_core' => {
-        password: 'Octopus42',
-      },
-    },
-  },
-}
-
-tentacle_options = {
-  recipes: ['gusztavvargadr_octopus_tentacle::default'],
-  octopus: {
-    server_api_key: server_api_key,
-    server_thumbprint: server_thumbprint,
-    environment_names: ['sandbox'],
-    tenant_names: ['private'],
-    role_names: ['tentacle'],
-  },
-}
-
 Environment.new(name: 'octopus.local') do |environment|
   server = WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |vm|
     OctopusServerChefSoloProvisioner.new(
       vm,
-      server_options.deep_merge(
-        {}
-      )
+      run_list: ['gusztavvargadr_octopus_server::default'],
+      octopus: {
+        import: {
+          'gusztavvargadr_octopus_server::import_core' => {
+            password: 'Octopus42',
+          },
+        },
+      }
     )
   end
 
@@ -43,11 +26,14 @@ Environment.new(name: 'octopus.local') do |environment|
     tentacle = WindowsSampleVM.new(environment, name: "tentacle-#{i}", box: 'gusztavvargadr/w16s') do |vm|
       OctopusTentacleChefSoloProvisioner.new(
         vm,
-        tentacle_options.deep_merge(
-          octopus: {
-            server_web_address: server.hostname,
-          }
-        )
+        octopus: {
+          server_hostname: server.hostname,
+          server_api_key: server_api_key,
+          server_thumbprint: server_thumbprint,
+          environment_names: ['sandbox'],
+          tenant_names: ['private'],
+          role_names: ['tentacle'],
+        }
       )
     end
     tentacles.push tentacle

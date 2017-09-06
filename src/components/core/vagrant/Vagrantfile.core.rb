@@ -253,7 +253,9 @@ end
 class ChefSoloProvisioner < Provisioner
   @@chef_solo = {
     type: 'chef_solo',
-    recipes: [],
+    cookbooks_path: [''],
+    roles_path: ['roles'],
+    run_list: [],
     json: {},
   }
 
@@ -268,15 +270,11 @@ class ChefSoloProvisioner < Provisioner
   def vagrant_configure
     super
 
-    recipes.each do |recipe|
-      vagrant.add_recipe recipe
-    end
+    vagrant.cookbooks_path = options[:cookbooks_path]
+    vagrant.roles_path = options[:roles_path]
 
+    vagrant.run_list = options[:run_list]
     vagrant.json = json(vm, options)
-  end
-
-  def recipes
-    options[:recipes]
   end
 
   def json(vm, options)

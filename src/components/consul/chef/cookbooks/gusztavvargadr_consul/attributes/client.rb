@@ -1,10 +1,17 @@
 default['gusztavvargadr_consul']['client'] = {
   'version' => '0.9.2',
-  'client_addr' => '127.0.0.1',
   'config' => {
     'options' => {
       'ui' => true,
+      'node_name' => '',
+      'retry_join' => [],
+      'encrypt' => '',
       'acl_datacenter' => 'dc1',
+      'acl_agent_token' => '',
+
+      'acl_token' => '',
     },
   },
+
+  'client_addr' => '127.0.0.1',
 }
