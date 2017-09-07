@@ -1,0 +1,14 @@
+octopus:
+  tentacle_count: 1
+
+  import_location: gusztavvargadr_octopus_samples::server_import
+  import_password: Octopus42
+
+  server_api_key:
+  server_thumbprint:
+  environment_names:
+    - environment
+  tentant_names:
+    - tenant
+  role_names:
+    - tentacle

@@ -1,8 +1,8 @@
 {
   "$type": "Octopus.Core.Model.Environments.DeploymentEnvironment, Octopus.Core",
-  "Id": "Environments-2",
-  "Name": "test",
+  "Id": "Environments-1",
+  "Name": "environment",
   "Description": "",
-  "SortOrder": 1,
+  "SortOrder": 0,
   "UseGuidedFailure": false
 }

@@ -1,0 +1,7 @@
+consul:
+  server_count: 3
+  client_ubuntu_count: 1
+  client_windows_count: 1
+
+  encrypt:
+  token:

@@ -1,3 +1,20 @@
+require 'yaml'
+require 'erb'
+
+class Options
+  attr_reader :options
+  attr_reader :directory
+
+  def initialize(directory)
+    @directory = directory
+    @options = {}
+
+    Dir.glob("#{@directory}/vagrant*.yml").sort_by { |file| File.basename(file, '.*') }.each do |file|
+      @options = @options.deep_merge(YAML.load(ERB.new(File.read(file)).result) || {})
+    end
+  end
+end
+
 class Environment
   @@core = {
     name: 'local',

@@ -30,7 +30,7 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
               'acl_agent_token' => options[:consul][:acl_agent_token],
             },
           },
-        }
+        },
       }
     )
   end

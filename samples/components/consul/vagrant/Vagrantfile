@@ -1,24 +1,18 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/consul/vagrant/Vagrantfile.core"
 
-server_count = 2
-client_count = 1
-
-encrypt = 'sUi8RtZLcKoRszrsh93wHw=='
-token = '9ca03b8d53064957b5db56b1ddc43111'
-
 Environment.new(name: 'consul.local') do |environment|
   servers = []
-  (1..server_count).each do |i|
+  (1..consul_options['server_count']).each do |i|
     vm = UbuntuSampleVM.new(environment, name: "server-#{i}") do |server|
       ConsulServerChefSoloProvisioner.new(
         server,
         consul: {
           servers: servers.map(&:hostname),
-          encrypt: encrypt,
-          acl_agent_token: token,
+          encrypt: consul_options['encrypt'],
+          acl_agent_token: consul_options['token'],
 
-          acl_master_token: token,
+          acl_master_token: consul_options['token'],
         }
       )
     end
@@ -26,33 +20,43 @@ Environment.new(name: 'consul.local') do |environment|
   end
 
   clients = []
-  (1..client_count).each do |i|
+  (1..consul_options['client_ubuntu_count']).each do |i|
     vm = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |client|
       ConsulClientChefSoloProvisioner.new(
         client,
         consul: {
           servers: servers.map(&:hostname),
-          encrypt: encrypt,
-          acl_agent_token: token,
+          encrypt: consul_options['encrypt'],
+          acl_agent_token: consul_options['token'],
 
-          acl_client_token: token,
-        }
-      )
-    end
-    clients.push vm
-
-    vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
-      ConsulClientChefSoloProvisioner.new(
-        client,
-        consul: {
-          servers: servers.map(&:hostname),
-          encrypt: encrypt,
-          acl_agent_token: token,
-
-          acl_client_token: token,
+          acl_client_token: consul_options['token'],
         }
       )
     end
     clients.push vm
   end
+
+  (1..consul_options['client_windows_count']).each do |i|
+    vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
+      ConsulClientChefSoloProvisioner.new(
+        client,
+        consul: {
+          servers: servers.map(&:hostname),
+          encrypt: consul_options['encrypt'],
+          acl_agent_token: consul_options['token'],
+
+          acl_client_token: consul_options['token'],
+        }
+      )
+    end
+    clients.push vm
+  end
+end
+
+def consul_options
+  Options.new(directory).options['consul']
+end
+
+def directory
+  File.dirname(__FILE__)
 end

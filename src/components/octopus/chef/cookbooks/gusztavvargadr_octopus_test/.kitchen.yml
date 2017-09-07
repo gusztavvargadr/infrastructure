@@ -20,7 +20,7 @@ platforms:
 suites:
   - name: server
     run_list:
-      - recipe[gusztavvargadr_octopus::server]
+      - recipe[gusztavvargadr_octopus_test::server]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -32,12 +32,11 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus::server_import_test:
+            gusztavvargadr_octopus_test::server_import_core:
               password: Octopus42
   - name: tentacle-listening
     run_list:
-      - recipe[gusztavvargadr_octopus::server]
-      - recipe[gusztavvargadr_octopus::tentacle]
+      - recipe[gusztavvargadr_octopus_test::tentacle_listening]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -49,7 +48,9 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus::server_import_test:
+            gusztavvargadr_octopus_test::server_import_core:
+              password: Octopus42
+            gusztavvargadr_octopus_test::server_import_secrets:
               password: Octopus42
         tentacle:
           execute_username: vagrant
@@ -66,8 +67,7 @@ suites:
             - tentacle-listening
   - name: tentacle-polling
     run_list:
-      - recipe[gusztavvargadr_octopus::server]
-      - recipe[gusztavvargadr_octopus::tentacle]
+      - recipe[gusztavvargadr_octopus_test::tentacle_polling]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -79,7 +79,9 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus::server_import_test:
+            gusztavvargadr_octopus_test::server_import_core:
+              password: Octopus42
+            gusztavvargadr_octopus_test::server_import_secrets:
               password: Octopus42
         tentacle:
           execute_username: vagrant
@@ -95,4 +97,4 @@ suites:
             - tentacle-polling
   - name: client
     run_list:
-      - recipe[gusztavvargadr_octopus::client]
+      - recipe[gusztavvargadr_octopus_test::client]

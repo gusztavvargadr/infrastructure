@@ -1,20 +1,15 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
 
-tentacle_count = 1
-
-server_api_key = 'API-6ENORPWQM3NWT7G6P47W5USM'
-server_thumbprint = '96195237FCE647FFE277DE7CE749264AC65DAFFF'
-
 Environment.new(name: 'octopus.local') do |environment|
   server = WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |vm|
     OctopusServerChefSoloProvisioner.new(
       vm,
-      run_list: ['gusztavvargadr_octopus_server::default'],
+      run_list: ['recipe[gusztavvargadr_octopus_samples::server]'],
       octopus: {
         import: {
-          'gusztavvargadr_octopus_server::import_core' => {
-            password: 'Octopus42',
+          octopus_options['import_location'] => {
+            password: octopus_options['import_password'],
           },
         },
       }
@@ -22,20 +17,29 @@ Environment.new(name: 'octopus.local') do |environment|
   end
 
   tentacles = []
-  (1..tentacle_count).each do |i|
+  (1..octopus_options['tentacle_count']).each do |i|
     tentacle = WindowsSampleVM.new(environment, name: "tentacle-#{i}", box: 'gusztavvargadr/w16s') do |vm|
       OctopusTentacleChefSoloProvisioner.new(
         vm,
+        run_list: ['recipe[gusztavvargadr_octopus_samples::tentacle]'],
         octopus: {
           server_hostname: server.hostname,
-          server_api_key: server_api_key,
-          server_thumbprint: server_thumbprint,
-          environment_names: ['sandbox'],
-          tenant_names: ['private'],
-          role_names: ['tentacle'],
+          server_api_key: octopus_options['server_api_key'],
+          server_thumbprint: octopus_options['server_thumbprint'],
+          environment_names: octopus_options['environment_names'],
+          tenant_names: octopus_options['tenant_names'],
+          role_names: octopus_options['role_names'],
         }
       )
     end
     tentacles.push tentacle
   end
+end
+
+def octopus_options
+  Options.new(directory).options['octopus']
+end
+
+def directory
+  File.dirname(__FILE__)
 end
