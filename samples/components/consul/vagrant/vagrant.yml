@@ -1,7 +1,23 @@
-consul:
-  server_count: 3
-  client_ubuntu_count: 1
-  client_windows_count: 1
+server:
+  instance_count: 3
+  consul:
+    encrypt:
+    acl_agent_token:
 
-  encrypt:
-  token:
+    acl_master_token:
+
+client_ubuntu:
+  instance_count: 1
+  consul:
+    encrypt:
+    acl_agent_token:
+
+    acl_client_token:
+
+client_windows:
+  instance_count: 1
+  consul:
+    encrypt:
+    acl_agent_token:
+
+    acl_client_token:

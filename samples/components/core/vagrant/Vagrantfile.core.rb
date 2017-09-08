@@ -25,9 +25,9 @@ class WindowsSampleVM < VM
     VirtualBoxProvider.new(self)
 
     FileProvisioner.new(self,
-      source: 'C:/Windows/System32/drivers/etc/hosts',
-      destination: 'C:/Windows/System32/drivers/etc/hosts',
-      run: 'always')
+      'source' => 'C:/Windows/System32/drivers/etc/hosts',
+      'destination' => 'C:/Windows/System32/drivers/etc/hosts',
+      'run' => 'always')
   end
 end
 
@@ -54,11 +54,11 @@ class UbuntuSampleVM < VM
     VirtualBoxProvider.new(self)
 
     FileProvisioner.new(self,
-      source: 'C:/Windows/System32/drivers/etc/hosts',
-      destination: '/tmp/etc/hosts',
-      run: 'always')
+      'source' => 'C:/Windows/System32/drivers/etc/hosts',
+      'destination' => '/tmp/etc/hosts',
+      'run' => 'always')
     ShellProvisioner.new(self,
-      inline: 'mv /tmp/etc/hosts /etc/hosts',
-      run: 'always')
+      'inline' => 'mv /tmp/etc/hosts /etc/hosts',
+      'run' => 'always')
   end
 end

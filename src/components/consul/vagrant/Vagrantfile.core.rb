@@ -2,11 +2,11 @@ require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 
 class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
   @@consul_agent = {
-    consul: {
-      type: '',
-      servers: [],
-      encrypt: '',
-      acl_agent_token: '',
+    'consul' => {
+      'type' => '',
+      'servers' => [],
+      'encrypt' => '',
+      'acl_agent_token' => '',
     },
   }
 
@@ -21,13 +21,13 @@ class ConsulAgentChefSoloProvisioner < ChefSoloProvisioner
   def json(vm, options)
     super(vm, options).deep_merge(
       'gusztavvargadr_consul' => {
-        options[:consul][:type] => {
+        options['consul']['type'] => {
           'config' => {
             'options' => {
               'node_name' => vm.hostname,
-              'retry_join' => options[:consul][:servers],
-              'encrypt' => options[:consul][:encrypt],
-              'acl_agent_token' => options[:consul][:acl_agent_token],
+              'retry_join' => options['consul']['servers'],
+              'encrypt' => options['consul']['encrypt'],
+              'acl_agent_token' => options['consul']['acl_agent_token'],
             },
           },
         },
@@ -38,10 +38,10 @@ end
 
 class ConsulServerChefSoloProvisioner < ConsulAgentChefSoloProvisioner
   @@consul_server = {
-    run_list: ['recipe[gusztavvargadr_consul::server]'],
-    consul: {
-      type: 'server',
-      acl_master_token: '',
+    'run_list' => ['recipe[gusztavvargadr_consul::server]'],
+    'consul' => {
+      'type' => 'server',
+      'acl_master_token' => '',
     },
   }
 
@@ -59,8 +59,8 @@ class ConsulServerChefSoloProvisioner < ConsulAgentChefSoloProvisioner
         'server' => {
           'config' => {
             'options' => {
-              'bootstrap_expect' => options[:consul][:servers].count,
-              'acl_master_token' => options[:consul][:acl_master_token],
+              'bootstrap_expect' => options['consul']['servers'].count,
+              'acl_master_token' => options['consul']['acl_master_token'],
             },
           },
         },
@@ -71,10 +71,10 @@ end
 
 class ConsulClientChefSoloProvisioner < ConsulAgentChefSoloProvisioner
   @@consul_client = {
-    run_list: ['recipe[gusztavvargadr_consul::client]'],
-    consul: {
-      type: 'client',
-      acl_client_token: '',
+    'run_list' => ['recipe[gusztavvargadr_consul::client]'],
+    'consul' => {
+      'type' => 'client',
+      'acl_client_token' => '',
     },
   }
 
@@ -92,7 +92,7 @@ class ConsulClientChefSoloProvisioner < ConsulAgentChefSoloProvisioner
         'client' => {
           'config' => {
             'options' => {
-              'acl_token' => options[:consul][:acl_client_token],
+              'acl_token' => options['consul']['acl_client_token'],
             },
           },
         },

@@ -192,8 +192,8 @@ end
 
 class Provisioner
   @@core = {
-    type: '',
-    run: '',
+    'type' => '',
+    'run' => '',
   }
 
   def self.core(options = {})
@@ -208,7 +208,7 @@ class Provisioner
     @options = @@core.deep_merge(options)
     @vm = vm
 
-    @vm.vagrant.vm.provision @options[:type], vagrant_options do |vagrant|
+    @vm.vagrant.vm.provision @options['type'], vagrant_options do |vagrant|
       @vagrant = vagrant
 
       vagrant_configure
@@ -219,7 +219,7 @@ class Provisioner
 
   def vagrant_options
     {
-      run: options[:run],
+      run: options['run'],
     }
   end
 
@@ -229,9 +229,9 @@ end
 
 class FileProvisioner < Provisioner
   @@file = {
-    type: 'file',
-    source: '',
-    destination: '',
+    'type' => 'file',
+    'source' => '',
+    'destination' => '',
   }
 
   def self.file(options = {})
@@ -243,15 +243,15 @@ class FileProvisioner < Provisioner
   end
 
   def vagrant_options
-    super.deep_merge(source: options[:source], destination: options[:destination])
+    super.deep_merge(source: options['source'], destination: options['destination'])
   end
 end
 
 class ShellProvisioner < Provisioner
   @@shell = {
-    type: 'shell',
-    inline: nil,
-    path: nil,
+    'type' => 'shell',
+    'inline' => nil,
+    'path' => nil,
   }
 
   def self.shell(options = {})
@@ -263,17 +263,17 @@ class ShellProvisioner < Provisioner
   end
 
   def vagrant_options
-    super.deep_merge(inline: options[:inline], path: options[:path])
+    super.deep_merge(inline: options['inline'], path: options['path'])
   end
 end
 
 class ChefSoloProvisioner < Provisioner
   @@chef_solo = {
-    type: 'chef_solo',
-    cookbooks_path: [''],
-    roles_path: ['roles'],
-    run_list: [],
-    json: {},
+    'type' => 'chef_solo',
+    'cookbooks_path' => [''],
+    'roles_path' => ['roles'],
+    'run_list' => [],
+    'json' => {},
   }
 
   def self.chef_solo(options = {})
@@ -287,23 +287,23 @@ class ChefSoloProvisioner < Provisioner
   def vagrant_configure
     super
 
-    vagrant.cookbooks_path = options[:cookbooks_path]
-    vagrant.roles_path = options[:roles_path]
+    vagrant.cookbooks_path = options['cookbooks_path']
+    vagrant.roles_path = options['roles_path']
 
-    vagrant.run_list = options[:run_list]
+    vagrant.run_list = options['run_list']
     vagrant.json = json(vm, options)
   end
 
   def json(vm, options)
-    options[:json]
+    options['json']
   end
 end
 
 class DockerProvisioner < Provisioner
   @@docker = {
-    type: 'docker',
-    builds: [],
-    runs: [],
+    'type' => 'docker',
+    'builds' => [],
+    'runs' => [],
   }
 
   def self.docker(options = {})
@@ -317,11 +317,11 @@ class DockerProvisioner < Provisioner
   def vagrant_configure
     super
 
-    options[:builds].each do |build|
+    options['builds'].each do |build|
       vagrant.build_image build[:path], args: build[:args]
     end
 
-    options[:runs].each do |run|
+    options['runs'].each do |run|
       vagrant.run run[:container],
         image: run[:image],
         args: run[:args],

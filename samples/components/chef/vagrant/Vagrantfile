@@ -4,8 +4,8 @@ Environment.new(name: 'chef.local') do |environment|
   WindowsSampleVM.new(environment, name: 'solo') do |solo|
     ChefSoloProvisioner.new(
       solo,
-      run_list: ['recipe[gusztavvargadr_windows::chocolatey_packages]'],
-      json: {
+      'run_list' => ['recipe[gusztavvargadr_windows::chocolatey_packages]'],
+      'json' => {
         'gusztavvargadr_windows' => {
           'chocolatey_packages' => {
             'nuget.commandline' => {},
@@ -16,8 +16,8 @@ Environment.new(name: 'chef.local') do |environment|
   end
 
   WindowsSampleVM.new(environment, name: 'zero') do |zero|
-    FileProvisioner.new(zero, source: 'chef', destination: '/tmp/vagrant/chef')
-    ShellProvisioner.new(zero, inline: 'choco install -y chefdk git')
-    ShellProvisioner.new(zero, inline: 'cd /tmp/vagrant/chef; berks vendor; chef-client -z --once -c client.rb -j client.json')
+    FileProvisioner.new(zero, 'source' => 'chef', 'destination' => '/tmp/vagrant/chef')
+    ShellProvisioner.new(zero, 'inline' => 'choco install -y chefdk git')
+    ShellProvisioner.new(zero, 'inline' => 'cd /tmp/vagrant/chef; berks vendor; chef-client -z --once -c client.rb -j client.json')
   end
 end

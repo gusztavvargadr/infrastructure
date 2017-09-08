@@ -1,62 +1,50 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/consul/vagrant/Vagrantfile.core"
 
+options = Options.new(File.dirname(__FILE__)).options
+
 Environment.new(name: 'consul.local') do |environment|
   servers = []
-  (1..consul_options['server_count']).each do |i|
-    vm = UbuntuSampleVM.new(environment, name: "server-#{i}") do |server|
+  (1..options['server']['instance_count']).each do |i|
+    server = UbuntuSampleVM.new(environment, name: "server-#{i}") do |vm|
       ConsulServerChefSoloProvisioner.new(
-        server,
-        consul: {
-          servers: servers.map(&:hostname),
-          encrypt: consul_options['encrypt'],
-          acl_agent_token: consul_options['token'],
-
-          acl_master_token: consul_options['token'],
-        }
+        vm,
+        options['server'].deep_merge(
+          'consul' => {
+            'servers' => servers.map(&:hostname),
+          }
+        )
       )
     end
-    servers.push vm
+    servers.push server
   end
 
   clients = []
-  (1..consul_options['client_ubuntu_count']).each do |i|
-    vm = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |client|
+  (1..options['client_ubuntu']['instance_count']).each do |i|
+    client_ubuntu = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |vm|
       ConsulClientChefSoloProvisioner.new(
-        client,
-        consul: {
-          servers: servers.map(&:hostname),
-          encrypt: consul_options['encrypt'],
-          acl_agent_token: consul_options['token'],
-
-          acl_client_token: consul_options['token'],
-        }
+        vm,
+        options['client_ubuntu'].deep_merge(
+          'consul' => {
+            'servers' => servers.map(&:hostname),
+          }
+        )
       )
     end
-    clients.push vm
+    clients.push client_ubuntu
   end
 
-  (1..consul_options['client_windows_count']).each do |i|
-    vm = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |client|
+  (1..options['client_windows']['instance_count']).each do |i|
+    client_windows = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |vm|
       ConsulClientChefSoloProvisioner.new(
-        client,
-        consul: {
-          servers: servers.map(&:hostname),
-          encrypt: consul_options['encrypt'],
-          acl_agent_token: consul_options['token'],
-
-          acl_client_token: consul_options['token'],
-        }
+        vm,
+        options['client_windows'].deep_merge(
+          'consul' => {
+            'servers' => servers.map(&:hostname),
+          }
+        )
       )
     end
-    clients.push vm
+    clients.push client_windows
   end
-end
-
-def consul_options
-  Options.new(directory).options['consul']
-end
-
-def directory
-  File.dirname(__FILE__)
 end

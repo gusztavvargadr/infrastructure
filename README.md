@@ -49,7 +49,12 @@ src
 
 samples to follow src
   domain and entity names
-      ...
+    ...
+
+
+vagrant options smbol vs string
+vagrant chef json static vs method
+ubuntu base image with chef
 
 vagrant: org, domain, component, project, tenant, env
 multiple domain names per level with overrides to support aliases too

@@ -1,45 +1,28 @@
 require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
 require "#{File.dirname(__FILE__)}/../../../../src/components/octopus/vagrant/Vagrantfile.core"
 
+options = Options.new(File.dirname(__FILE__)).options
+
 Environment.new(name: 'octopus.local') do |environment|
   server = WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |vm|
     OctopusServerChefSoloProvisioner.new(
       vm,
-      run_list: ['recipe[gusztavvargadr_octopus_samples::server]'],
-      octopus: {
-        import: {
-          octopus_options['import_location'] => {
-            password: octopus_options['import_password'],
-          },
-        },
-      }
+      options['server']
     )
   end
 
   tentacles = []
-  (1..octopus_options['tentacle_count']).each do |i|
+  (1..options['tentacle']['instance_count']).each do |i|
     tentacle = WindowsSampleVM.new(environment, name: "tentacle-#{i}", box: 'gusztavvargadr/w16s') do |vm|
       OctopusTentacleChefSoloProvisioner.new(
         vm,
-        run_list: ['recipe[gusztavvargadr_octopus_samples::tentacle]'],
-        octopus: {
-          server_hostname: server.hostname,
-          server_api_key: octopus_options['server_api_key'],
-          server_thumbprint: octopus_options['server_thumbprint'],
-          environment_names: octopus_options['environment_names'],
-          tenant_names: octopus_options['tenant_names'],
-          role_names: octopus_options['role_names'],
-        }
+        options['tentacle'].deep_merge(
+          'octopus' => {
+            'server_hostname' => server.hostname,
+          }
+        )
       )
     end
     tentacles.push tentacle
   end
-end
-
-def octopus_options
-  Options.new(directory).options['octopus']
-end
-
-def directory
-  File.dirname(__FILE__)
 end
