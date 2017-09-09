@@ -1,23 +1,38 @@
 server:
   instance_count: 3
-  consul:
-    encrypt:
-    acl_agent_token:
-
-    acl_master_token:
+  run_list:
+    - role[server]
+  json:
+    gusztavvargadr_consul:
+      server:
+        config:
+          options:
+            encrypt:
+            acl_agent_token:
+            acl_master_token:
 
 client_ubuntu:
   instance_count: 1
-  consul:
-    encrypt:
-    acl_agent_token:
-
-    acl_client_token:
+  run_list:
+    - role[client_ubuntu]
+  json:
+    gusztavvargadr_consul:
+      client:
+        config:
+          options:
+            encrypt:
+            acl_agent_token:
+            acl_token:
 
 client_windows:
   instance_count: 1
-  consul:
-    encrypt:
-    acl_agent_token:
-
-    acl_client_token:
+  run_list:
+    - role[client_windows]
+  json:
+    gusztavvargadr_consul:
+      client:
+        config:
+          options:
+            encrypt:
+            acl_agent_token:
+            acl_token:

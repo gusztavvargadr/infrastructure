@@ -55,6 +55,7 @@ samples to follow src
 vagrant options smbol vs string
 vagrant chef json static vs method
 ubuntu base image with chef
+yml split configurtion for env, vm, provision, etc
 
 vagrant: org, domain, component, project, tenant, env
 multiple domain names per level with overrides to support aliases too

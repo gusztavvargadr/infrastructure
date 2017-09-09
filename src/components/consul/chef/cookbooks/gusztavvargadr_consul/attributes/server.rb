@@ -8,13 +8,11 @@ default['gusztavvargadr_consul']['server'] = {
       'encrypt' => '',
       'acl_datacenter' => 'dc1',
       'acl_agent_token' => '',
-
       'server' => true,
       'bootstrap_expect' => 1,
       'acl_default_policy' => 'deny',
       'acl_master_token' => '',
     },
   },
-
   'client_addr' => '0.0.0.0',
 }

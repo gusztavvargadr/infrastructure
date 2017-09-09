@@ -17,8 +17,12 @@ Environment.new(name: 'octopus.local') do |environment|
       OctopusTentacleChefSoloProvisioner.new(
         vm,
         options['tentacle'].deep_merge(
-          'octopus' => {
-            'server_hostname' => server.hostname,
+          'json' => {
+            'gusztavvargadr_octopus' => {
+              'tentacle' => {
+                'server_web_address' => "http://#{server.hostname}",
+              },
+            },
           }
         )
       )
