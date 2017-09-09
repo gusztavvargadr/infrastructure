@@ -38,7 +38,7 @@ end
 
 class ConsulServerChefSoloProvisioner < ConsulAgentChefSoloProvisioner
   @@consul_server = {
-    'run_list' => ['recipe[gusztavvargadr_consul::server]'],
+    'run_list' => 'recipe[gusztavvargadr_consul::server]',
     'consul' => {
       'type' => 'server',
       'acl_master_token' => '',
@@ -71,7 +71,7 @@ end
 
 class ConsulClientChefSoloProvisioner < ConsulAgentChefSoloProvisioner
   @@consul_client = {
-    'run_list' => ['recipe[gusztavvargadr_consul::client]'],
+    'run_list' => 'recipe[gusztavvargadr_consul::client]',
     'consul' => {
       'type' => 'client',
       'acl_client_token' => '',

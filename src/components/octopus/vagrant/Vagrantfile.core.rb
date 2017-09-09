@@ -42,7 +42,7 @@ end
 
 class OctopusTentacleChefSoloProvisioner < ChefSoloProvisioner
   @@octopus_tentacle = {
-    'run_list' => ['recipe[gusztavvargadr_octopus::tentacle]'],
+    'run_list' => 'recipe[gusztavvargadr_octopus::tentacle]',
     'octopus' => {
       'execute_username' => 'vagrant',
       'execute_password' => 'vagrant',

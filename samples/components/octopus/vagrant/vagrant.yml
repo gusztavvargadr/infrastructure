@@ -1,14 +1,12 @@
 server:
-  run_list:
-    - recipe[gusztavvargadr_octopus_samples::server]
+  run_list: recipe[gusztavvargadr_octopus_samples::server]
   octopus:
     import:
       gusztavvargadr_octopus_samples::server_import:
         password: Octopus42
 
 tentacle:
-  run_list:
-    - recipe[gusztavvargadr_octopus_samples::tentacle]
+  run_list: recipe[gusztavvargadr_octopus_samples::tentacle]
   instance_count: 1
   octopus:
     server_api_key:
