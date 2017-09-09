@@ -1,6 +1,6 @@
 name 'tentacle'
 run_list(
-  'recipe[gusztavvargadr_octopus_samples::tentacle]'
+  'recipe[gusztavvargadr_octopus_sample::tentacle]'
 )
 default_attributes(
   'gusztavvargadr_octopus' => {

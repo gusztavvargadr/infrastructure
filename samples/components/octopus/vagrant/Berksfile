@@ -5,5 +5,4 @@ gusztavvargadr_sources
 cookbook 'gusztavvargadr_octopus_samples', path: '../chef/cookbooks/gusztavvargadr_octopus_samples'
 
 gusztavvargadr_cookbook 'components', 'octopus'
-gusztavvargadr_cookbook 'components', 'octopus', 'test'
 gusztavvargadr_cookbook 'components', 'windows'
