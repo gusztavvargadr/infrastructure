@@ -20,7 +20,7 @@ platforms:
 suites:
   - name: server
     run_list:
-      - recipe[gusztavvargadr_octopus_test::server]
+      - recipe[gusztavvargadr_octopus_tests::server]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -32,11 +32,11 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus_test::server_import:
+            gusztavvargadr_octopus_tests::server_import:
               password: Octopus42
   - name: tentacle-listening
     run_list:
-      - recipe[gusztavvargadr_octopus_test::tentacle_listening]
+      - recipe[gusztavvargadr_octopus_tests::tentacle_listening]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -48,7 +48,7 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus_test::server_import:
+            gusztavvargadr_octopus_tests::server_import:
               password: Octopus42
         tentacle:
           execute_username: vagrant
@@ -65,7 +65,7 @@ suites:
             - tentacle-listening
   - name: tentacle-polling
     run_list:
-      - recipe[gusztavvargadr_octopus_test::tentacle_polling]
+      - recipe[gusztavvargadr_octopus_tests::tentacle_polling]
     attributes:
       gusztavvargadr_octopus:
         server:
@@ -77,7 +77,7 @@ suites:
           web_username: vagrant
           web_password: Vagrant42
           import:
-            gusztavvargadr_octopus_test::server_import:
+            gusztavvargadr_octopus_tests::server_import:
               password: Octopus42
         tentacle:
           execute_username: vagrant
@@ -93,4 +93,4 @@ suites:
             - tentacle-polling
   - name: client
     run_list:
-      - recipe[gusztavvargadr_octopus_test::client]
+      - recipe[gusztavvargadr_octopus_tests::client]

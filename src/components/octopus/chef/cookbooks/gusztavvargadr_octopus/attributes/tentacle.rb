@@ -1,5 +1,5 @@
 default['gusztavvargadr_octopus']['tentacle'] = {
-  'version' => '',
+  'version' => '3.15.7',
   'execute_username' => '',
   'execute_password' => '',
   'home_directory_path' => 'C:\\Octopus',

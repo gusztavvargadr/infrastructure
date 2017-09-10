@@ -1,38 +1,35 @@
 server:
   instance_count: 3
-  run_list:
-    - role[server]
-  json:
-    gusztavvargadr_consul:
-      server:
-        config:
-          options:
-            encrypt:
-            acl_agent_token:
-            acl_master_token:
+  consul_server:
+    json:
+      gusztavvargadr_consul:
+        server:
+          config:
+            options:
+              encrypt: ''
+              acl_agent_token: ''
+              acl_master_token: ''
 
 client_ubuntu:
   instance_count: 1
-  run_list:
-    - role[client_ubuntu]
-  json:
-    gusztavvargadr_consul:
-      client:
-        config:
-          options:
-            encrypt:
-            acl_agent_token:
-            acl_token:
+  consul_client:
+    json:
+      gusztavvargadr_consul:
+        client:
+          config:
+            options:
+              encrypt: ''
+              acl_agent_token: ''
+              acl_token: ''
 
 client_windows:
   instance_count: 1
-  run_list:
-    - role[client_windows]
-  json:
-    gusztavvargadr_consul:
-      client:
-        config:
-          options:
-            encrypt:
-            acl_agent_token:
-            acl_token:
+  consul_client:
+    json:
+      gusztavvargadr_consul:
+        client:
+          config:
+            options:
+              encrypt: ''
+              acl_agent_token: ''
+              acl_token: ''

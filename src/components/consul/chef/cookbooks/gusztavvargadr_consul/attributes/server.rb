@@ -1,5 +1,5 @@
 default['gusztavvargadr_consul']['server'] = {
-  'version' => '0.9.2',
+  'version' => '0.9.3',
   'config' => {
     'options' => {
       'ui' => true,

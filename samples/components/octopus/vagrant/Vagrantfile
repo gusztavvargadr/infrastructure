@@ -7,7 +7,7 @@ Environment.new(name: 'octopus.local') do |environment|
   server = WindowsSampleVM.new(environment, name: 'server', box: 'gusztavvargadr/w16s-sql14d') do |vm|
     OctopusServerChefSoloProvisioner.new(
       vm,
-      options['server']
+      options['server']['octopus_server']
     )
   end
 
@@ -16,7 +16,7 @@ Environment.new(name: 'octopus.local') do |environment|
     tentacle = WindowsSampleVM.new(environment, name: "tentacle-#{i}", box: 'gusztavvargadr/w16s') do |vm|
       OctopusTentacleChefSoloProvisioner.new(
         vm,
-        options['tentacle'].deep_merge(
+        options['tentacle']['octopus_tentacle'].deep_merge(
           'json' => {
             'gusztavvargadr_octopus' => {
               'tentacle' => {

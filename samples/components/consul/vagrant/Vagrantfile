@@ -9,7 +9,7 @@ Environment.new(name: 'consul.local') do |environment|
     server = UbuntuSampleVM.new(environment, name: "server-#{i}") do |vm|
       ConsulServerChefSoloProvisioner.new(
         vm,
-        options['server'].deep_merge(
+        options['server']['consul_server'].deep_merge(
           'json' => {
             'gusztavvargadr_consul' => {
               'server' => {
@@ -32,7 +32,7 @@ Environment.new(name: 'consul.local') do |environment|
     client_ubuntu = UbuntuSampleVM.new(environment, name: "client-ubuntu-#{i}") do |vm|
       ConsulClientChefSoloProvisioner.new(
         vm,
-        options['client_ubuntu'].deep_merge(
+        options['client_ubuntu']['consul_client'].deep_merge(
           'json' => {
             'gusztavvargadr_consul' => {
               'client' => {
@@ -54,7 +54,7 @@ Environment.new(name: 'consul.local') do |environment|
     client_windows = WindowsSampleVM.new(environment, name: "client-windows-#{i}") do |vm|
       ConsulClientChefSoloProvisioner.new(
         vm,
-        options['client_windows'].deep_merge(
+        options['client_windows']['consul_client'].deep_merge(
           'json' => {
             'gusztavvargadr_consul' => {
               'client' => {

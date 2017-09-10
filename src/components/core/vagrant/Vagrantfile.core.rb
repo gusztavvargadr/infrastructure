@@ -271,8 +271,7 @@ class ChefSoloProvisioner < Provisioner
   @@chef_solo = {
     'type' => 'chef_solo',
     'cookbooks_path' => [''],
-    'roles_path' => ['roles'],
-    'run_list' => [],
+    'run_list' => '',
     'json' => {},
   }
 
@@ -288,9 +287,7 @@ class ChefSoloProvisioner < Provisioner
     super
 
     vagrant.cookbooks_path = options['cookbooks_path']
-    vagrant.roles_path = options['roles_path']
-
-    vagrant.run_list = options['run_list']
+    vagrant.run_list = options['run_list'].split(',')
     vagrant.json = json(vm, options)
   end
 

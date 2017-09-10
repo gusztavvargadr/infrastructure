@@ -25,7 +25,7 @@ platforms:
 suites:
   - name: environment_variables
     run_list:
-      - recipe[gusztavvargadr_windows_test::environment_variables]
+      - recipe[gusztavvargadr_windows_tests::environment_variables]
     attributes:
       gusztavvargadr_windows:
         environment_variables:
@@ -36,7 +36,7 @@ suites:
             type: Machine
   - name: features
     run_list:
-      - recipe[gusztavvargadr_windows_test::features]
+      - recipe[gusztavvargadr_windows_tests::features]
     attributes:
       gusztavvargadr_windows:
         features:
@@ -44,7 +44,7 @@ suites:
           IIS:
   - name: chocolatey-packages
     run_list:
-      - recipe[gusztavvargadr_windows_test::chocolatey_packages]
+      - recipe[gusztavvargadr_windows_tests::chocolatey_packages]
     attributes:
       gusztavvargadr_windows:
         chocolatey_packages:
@@ -59,7 +59,7 @@ suites:
             elevated: true
   - name: native-packages
     run_list:
-      - recipe[gusztavvargadr_windows_test::native_packages]
+      - recipe[gusztavvargadr_windows_tests::native_packages]
     attributes:
       gusztavvargadr_windows:
         native_packages:
@@ -80,7 +80,7 @@ suites:
             elevated: true
   - name: files
     run_list:
-      - recipe[gusztavvargadr_windows_test::files]
+      - recipe[gusztavvargadr_windows_tests::files]
     attributes:
       gusztavvargadr_windows:
         files:
@@ -90,4 +90,4 @@ suites:
             source: https://www.google.nl/robots.txt
   - name: updates
     run_list:
-      - recipe[gusztavvargadr_windows_test::updates]
+      - recipe[gusztavvargadr_windows_tests::updates]

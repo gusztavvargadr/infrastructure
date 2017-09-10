@@ -6,6 +6,8 @@ TODOs
 core to root src
 consul cookbook: open ports
 gusztavvargadr.me.local
+write / apply env vars for using components (e.g. consul / octopus env vars)
+vagrant yml remove duplication
 
 folder hierarchy
 src
@@ -51,6 +53,9 @@ samples to follow src
   domain and entity names
     ...
 
+test kitchen: no shared folders
+env vars for secrets by default prefixed per type
+cookbook naming samples tests (plural)
 
 vagrant options smbol vs string
 vagrant chef json static vs method
