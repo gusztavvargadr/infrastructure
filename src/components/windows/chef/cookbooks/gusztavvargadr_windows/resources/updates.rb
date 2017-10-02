@@ -1,3 +1,5 @@
+property :msu_source, String, name_property: true
+
 default_action :install
 
 action :enable do
@@ -32,12 +34,33 @@ action :configure do
 end
 
 action :install do
-  gusztavvargadr_windows_powershell_script_elevated 'Install Updates' do
-    code <<-EOH
-      Get-WUInstall -MicrosoftUpdate -AcceptAll -IgnoreReboot
-    EOH
-    timeout 28_800
-    action :run
+  if msu_source.to_s.empty?
+    gusztavvargadr_windows_powershell_script_elevated 'Install Updates' do
+      code <<-EOH
+        Get-WUInstall -MicrosoftUpdate -AcceptAll -IgnoreReboot
+      EOH
+      timeout 7_200
+      action :run
+    end
+  else
+    directory_path = "#{Chef::Config[:file_cache_path]}/gusztavvargadr_windows/updates"
+    directory directory_path do
+      recursive true
+      action :create
+    end
+
+    msu_file_path = "#{directory_path}/msu.msu"
+    remote_file msu_file_path do
+      source msu_source
+      action :create
+    end
+
+    gusztavvargadr_windows_powershell_script_elevated 'Install Updates' do
+      code <<-EOH
+        Start-Process "wusa.exe" "#{msu_file_path} /quiet /norestart" -Wait
+      EOH
+      action :run
+    end
   end
 end
 
@@ -49,7 +72,7 @@ action :cleanup do
       DISM.exe /Online /Cleanup-Image /StartComponentCleanup /ResetBase
       DISM.exe /Online /Cleanup-Image /AnalyzeComponentStore
     EOH
-    timeout 28_800
+    timeout 7_200
     action :run
   end
 end
