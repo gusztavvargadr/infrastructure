@@ -7,7 +7,7 @@ action :install do
     features_options server_options['features']
   end
 
-  gusztavvargadr_windows_chocolatey_packages '' do
-    chocolatey_packages_options server_options['chocolatey_packages']
+  gusztavvargadr_windows_native_packages '' do
+    native_packages_options server_options['native_packages']
   end
 end
