@@ -58,10 +58,6 @@ action :install do
     end
   end
 
-  directory directory_path do
-    action :delete
-  end
-
   powershell_script 'Enable Firewall' do
     code <<-EOH
      netsh advfirewall firewall add rule name="SQL Server" dir=in localport=1433 protocol=TCP action=allow
