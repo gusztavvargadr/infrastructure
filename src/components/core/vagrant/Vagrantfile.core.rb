@@ -62,7 +62,7 @@ class VM
     primary: false,
     memory: 1024,
     cpus: 1,
-    linked_clone: true,
+    linked_clone: ENV['VAGRANT_LINKED_CLONE'],
   }
 
   def self.core(options = {})
@@ -95,6 +95,8 @@ class VM
 
   def vagrant_configure
     vagrant.vm.box = options[:box] unless options[:box].to_s.empty?
+
+    vagrant.vm.hostname = options[:name] if environment.hostmanager_enabled?
     vagrant.hostmanager.aliases = [hostname] if environment.hostmanager_enabled?
   end
 
@@ -137,36 +139,6 @@ class Provider
   end
 end
 
-class HyperVProvider < Provider
-  @@hyperv = {
-    type: 'hyperv',
-    network_bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE'],
-    smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
-    smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD'],
-  }
-
-  def self.hyperv(options = {})
-    @@hyperv = @@hyperv.deep_merge(options)
-  end
-
-  def initialize(vm, options = {})
-    super(vm, @@hyperv.deep_merge(options))
-  end
-
-  def vagrant_configure
-    super
-
-    vagrant.vmname = vm.hostname
-    vagrant.differencing_disk = vm.options[:linked_clone]
-
-    override.vm.network 'public_network', bridge: options[:network_bridge]
-    override.vm.synced_folder '.', '/vagrant',
-      type: 'smb',
-      smb_username: options[:smb_username],
-      smb_password: options[:smb_password]
-  end
-end
-
 class VirtualBoxProvider < Provider
   @@virtualbox = {
     type: 'virtualbox',
@@ -187,6 +159,38 @@ class VirtualBoxProvider < Provider
     vagrant.linked_clone = vm.options[:linked_clone]
 
     override.vm.network 'public_network'
+  end
+end
+
+class HyperVProvider < Provider
+  @@hyperv = {
+    type: 'hyperv',
+    network_bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE'],
+    smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
+    smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD'],
+  }
+
+  def self.hyperv(options = {})
+    @@hyperv = @@hyperv.deep_merge(options)
+  end
+
+  def initialize(vm, options = {})
+    super(vm, @@hyperv.deep_merge(options))
+  end
+
+  def vagrant_configure
+    super
+
+    vagrant.vmname = vm.hostname
+    vagrant.memory = [1024, vm.options[:memory]].min
+    vagrant.maxmemory = vm.options[:memory]
+    vagrant.differencing_disk = vm.options[:linked_clone]
+
+    override.vm.network 'public_network', bridge: options[:network_bridge]
+    override.vm.synced_folder '.', '/vagrant',
+      type: 'smb',
+      smb_username: options[:smb_username],
+      smb_password: options[:smb_password]
   end
 end
 

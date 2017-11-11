@@ -8,9 +8,19 @@ consul cookbook: open ports
 gusztavvargadr.me.local
 write / apply env vars for using components (e.g. consul / octopus env vars)
 vagrant yml remove duplication
+docker tls terraform
 
 folder hierarchy
 src
+  components
+    core
+    compute
+    data
+  services
+  stacks
+  domains
+  ...
+
   core
     instance
       core

@@ -1,9 +1,0 @@
-require "#{File.dirname(__FILE__)}/../../core/vagrant/Vagrantfile.core"
-
-Provider.core(memory: 4096, cpus: 2)
-
-Environment.new(name: 'docker.local') do |environment|
-  WindowsSampleVM.new(environment, name: 'w10e', box: 'gusztavvargadr/w10e-dc')
-
-  WindowsSampleVM.new(environment, name: 'w16s', box: 'gusztavvargadr/w16s-dc')
-end

@@ -1,0 +1,60 @@
+version: "3"
+services:
+  bootstrap:
+    image: consul:latest
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command:
+      - agent
+      - -server
+      - -bootstrap-expect=4
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        # order: start-first
+  server:
+    image: consul:latest
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command:
+      - agent
+      - -server
+      - -retry-join=bootstrap
+      - -client=0.0.0.0
+      - -ui
+    ports:
+      - "8500:8500"
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        # order: start-first
+  client:
+    image: consul:latest
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+    command:
+      - agent
+      - -retry-join=server
+      - -ui
+    deploy:
+      replicas: 0
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+        # order: start-first
+
+#   "acl_agent_token": "",
+#   "acl_datacenter": "dc1",
+#   "acl_default_policy": "deny",
+#   "acl_master_token": "",
+#   "encrypt": "",
