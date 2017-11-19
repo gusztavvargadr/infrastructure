@@ -6,7 +6,7 @@ worker_linux_count = 1
 worker_windows_count = 1
 
 UbuntuSampleVM.ubuntu_sample(box: 'gusztavvargadr/u14', memory: 4096, cpus: 2)
-WindowsSampleVM.windows_sample(box: 'gusztavvargadr/w16s-dc', memory: 4096, cpus: 2)
+WindowsSampleVM.windows_sample(box: 'gusztavvargadr/w16sc-de', memory: 4096, cpus: 2)
 
 Environment.new(name: 'swarm.docker.local') do |environment|
   managers = []

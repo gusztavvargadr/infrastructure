@@ -3,65 +3,17 @@
 <!--
 TODOs
 
-core to root src
+vagrant memory hyperv allow from to
+back to private networks
+
 consul cookbook: open ports
 gusztavvargadr.me.local
 write / apply env vars for using components (e.g. consul / octopus env vars)
 vagrant yml remove duplication
 docker tls terraform
 
-folder hierarchy
-src
-  components
-    core
-    compute
-    data
-  services
-  stacks
-  domains
-  ...
-
-  core
-    instance
-      core
-        (core?)
-        local
-          roles
-          cookbooks
-          (vagrant)
-        aws
-          roles
-          cookbooks
-          (terraform)
-      windows
-        local
-          (vagrant)
-        aws
-          (terraform)
-      unix
-        local
-          (vagrant)
-        aws
-          (terraform)
-    image
-      core
-  components
-    consul
-      core
-        local
-          (vagrant)
-        aws
-          (terraform)
-      client
-        local
-          (vagrant)
-        aws
-          (terraform)
-    stacks
-
 samples to follow src
   domain and entity names
-    ...
 
 test kitchen: no shared folders
 env vars for secrets by default prefixed per type

@@ -7,7 +7,7 @@ services:
     command:
       - agent
       - -server
-      - -bootstrap-expect=4
+      - -bootstrap-expect=1
     deploy:
       replicas: 1
       restart_policy:
@@ -45,7 +45,7 @@ services:
       - -retry-join=server
       - -ui
     deploy:
-      replicas: 0
+      replicas: 3
       restart_policy:
         condition: on-failure
       update_config:
