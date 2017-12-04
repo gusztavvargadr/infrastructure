@@ -37,7 +37,7 @@ action :install do
   if msu_source.to_s.empty?
     gusztavvargadr_windows_powershell_script_elevated 'Install Updates' do
       code <<-EOH
-        Get-WUInstall -MicrosoftUpdate -AcceptAll -IgnoreReboot
+        Install-WindowsUpdate -MicrosoftUpdate -AcceptAll -IgnoreReboot
       EOH
       timeout 7_200
       action :run

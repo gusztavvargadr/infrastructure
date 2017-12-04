@@ -6,9 +6,7 @@ server:
         server:
           config:
             options:
-              encrypt: ''
-              acl_agent_token: ''
-              acl_master_token: ''
+              datacenter: local
 
 client_ubuntu:
   instance_count: 1
@@ -18,9 +16,7 @@ client_ubuntu:
         client:
           config:
             options:
-              encrypt: ''
-              acl_agent_token: ''
-              acl_token: ''
+              datacenter: local
 
 client_windows:
   instance_count: 1
@@ -30,6 +26,4 @@ client_windows:
         client:
           config:
             options:
-              encrypt: ''
-              acl_agent_token: ''
-              acl_token: ''
+              datacenter: local

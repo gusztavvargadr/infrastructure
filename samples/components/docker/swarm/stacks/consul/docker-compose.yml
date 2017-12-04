@@ -10,6 +10,7 @@ services:
       - -bootstrap-expect=1
     deploy:
       replicas: 1
+      # replicas: 0
       restart_policy:
         condition: on-failure
       update_config:
@@ -22,14 +23,16 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
     command:
       - agent
-      - -server
-      - -retry-join=bootstrap
-      - -client=0.0.0.0
       - -ui
+      - -retry-join=bootstrap
+      - -retry-join=server
+      - -client=0.0.0.0
+      - -server
     ports:
       - "8500:8500"
     deploy:
-      replicas: 3
+      replicas: 0
+      # replicas: 3
       restart_policy:
         condition: on-failure
       update_config:
@@ -42,10 +45,11 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
     command:
       - agent
-      - -retry-join=server
       - -ui
+      - -retry-join=server
     deploy:
-      replicas: 3
+      replicas: 0
+      # replicas: 5
       restart_policy:
         condition: on-failure
       update_config:
@@ -53,6 +57,8 @@ services:
         delay: 10s
         # order: start-first
 
+# check vagrant sample for more options
+#   datacenter:
 #   "acl_agent_token": "",
 #   "acl_datacenter": "dc1",
 #   "acl_default_policy": "deny",

@@ -1,7 +1,7 @@
 version: "3"
 services:
   visualizer:
-    image: dockersamples/visualizer:stable
+    image: dockersamples/visualizer:latest
     ports:
       - "8080:8080"
     volumes:

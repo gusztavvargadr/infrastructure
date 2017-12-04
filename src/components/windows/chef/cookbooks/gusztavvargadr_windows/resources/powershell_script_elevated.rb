@@ -3,7 +3,7 @@ property :user, String, default: ''
 property :password, String, default: ''
 property :cwd, String, default: 'C:\\'
 property :code, String, required: true
-property :wait_poll, Integer, default: 5
+property :wait_poll, Integer, default: 1
 property :timeout, Integer, default: 3600
 
 default_action :run

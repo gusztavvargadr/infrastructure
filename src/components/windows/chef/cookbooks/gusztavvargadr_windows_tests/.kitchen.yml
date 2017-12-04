@@ -21,6 +21,11 @@ platforms:
       name: winrm
     driver:
       box: gusztavvargadr/w16s
+  - name: w16sc
+    transport:
+      name: winrm
+    driver:
+      box: gusztavvargadr/w16sc
 
 suites:
   - name: environment_variables

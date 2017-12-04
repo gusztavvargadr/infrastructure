@@ -5,6 +5,16 @@ TODOs
 
 vagrant memory hyperv allow from to
 back to private networks
+cookbook naming -> chef/core, chef/tests (no cookbooks and prefix in folder name)
+networks set to private
+kitchen multi machine setup (use platform / suite name (parent folder?))
+chef test to use core resources only - chef spec for core recipe tests
+orders (components - vs, docker, iis, sql)
+order (providers - hyperv, vbox)
+consul acl dynamic bootstrap
+nssm cookbook for platform samples
+
+providers / platform as params for e.g. docker 
 
 consul cookbook: open ports
 gusztavvargadr.me.local

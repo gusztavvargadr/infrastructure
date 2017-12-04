@@ -9,5 +9,6 @@ action :install do
       Get-WindowsOptionalFeature -Online | Where { $_.FeatureName -match "#{feature_name}" } | Where { $_.State -ne "Enabled" } | ForEach { Enable-WindowsOptionalFeature -Online -FeatureName $_.FeatureName -All -NoRestart }
     EOH
     action :run
+    # not-if
   end
 end
