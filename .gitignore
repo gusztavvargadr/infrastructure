@@ -1,6 +1,5 @@
 .kitchen
 Berksfile.lock
-berks-cookbooks
 
 .vagrant
-vagrant.local.yml
+vagrant.*override*.yml

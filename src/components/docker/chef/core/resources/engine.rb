@@ -17,7 +17,7 @@ action :prepare do
     when 'enterprise'
       powershell_script 'Install PowerShell module \'DockerProvider\'' do
         code <<-EOH
-          Install-Module DockerMsftProvider -Force
+          Install-Module DockerProvider -Force
         EOH
         action :run
       end
@@ -39,7 +39,7 @@ action :install do
     when 'enterprise'
       powershell_script 'Install PowerShell package \'Docker\'' do
         code <<-EOH
-          Install-Package Docker -ProviderName DockerMsftProvider -Force
+          Install-Package Docker -ProviderName DockerProvider -Force
         EOH
         action :run
       end

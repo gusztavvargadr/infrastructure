@@ -274,8 +274,8 @@ end
 class ChefSoloProvisioner < Provisioner
   @@chef_solo = {
     'type' => 'chef_solo',
-    'version' => 'latest',
-    'cookbooks_path' => ['berks-cookbooks'],
+    'version' => '12.8.1',
+    'cookbooks_path' => ['cookbooks'],
     'run_list' => '',
     'json' => {},
   }

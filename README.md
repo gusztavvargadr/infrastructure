@@ -4,6 +4,7 @@
 TODOs
 
 vagrant memory hyperv allow from to
+vagrant berkshelf eliminate
 back to private networks
 cookbook naming -> chef/core, chef/tests (no cookbooks and prefix in folder name)
 networks set to private
