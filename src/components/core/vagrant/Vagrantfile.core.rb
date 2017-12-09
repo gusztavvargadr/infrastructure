@@ -96,6 +96,8 @@ class VM
   def vagrant_configure
     vagrant.vm.box = options[:box] unless options[:box].to_s.empty?
 
+    vagrant.vm.network 'private_network', type: 'dhcp'
+
     # vagrant.vm.hostname = options[:name] if environment.hostmanager_enabled?
     vagrant.hostmanager.aliases = [hostname] if environment.hostmanager_enabled?
   end
@@ -157,8 +159,6 @@ class VirtualBoxProvider < Provider
 
     vagrant.name = vm.hostname
     vagrant.linked_clone = vm.options[:linked_clone]
-
-    override.vm.network 'public_network'
   end
 end
 
@@ -181,12 +181,14 @@ class HyperVProvider < Provider
   def vagrant_configure
     super
 
+    override.vm.network 'private_network', bridge: options[:network_bridge]
+
+    # vagrant.memory = [1024, vm.options[:memory]].min
+    # vagrant.maxmemory = vm.options[:memory]
+
     vagrant.vmname = vm.hostname
-    vagrant.memory = [1024, vm.options[:memory]].min
-    vagrant.maxmemory = vm.options[:memory]
     vagrant.differencing_disk = vm.options[:linked_clone]
 
-    override.vm.network 'public_network', bridge: options[:network_bridge]
     override.vm.synced_folder '.', '/vagrant',
       type: 'smb',
       smb_username: options[:smb_username],
