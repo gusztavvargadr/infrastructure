@@ -11,7 +11,6 @@ default['gusztavvargadr_vs']['2017_community'] = {
         '--add Microsoft.VisualStudio.Workload.Azure',
         '--add Microsoft.VisualStudio.Workload.NetCoreTools',
         '--add Microsoft.VisualStudio.Component.TestTools.Core',
-        # '--add Microsoft.Net.Component.3.5.DeveloperTools',
         '--add Component.GitHub.VisualStudio',
         '--includeRecommended',
         '--includeOptional',

@@ -276,7 +276,6 @@ end
 class ChefSoloProvisioner < Provisioner
   @@chef_solo = {
     'type' => 'chef_solo',
-    'version' => '12.8.1',
     'cookbooks_path' => ['cookbooks'],
     'run_list' => '',
     'json' => {},
@@ -293,7 +292,6 @@ class ChefSoloProvisioner < Provisioner
   def vagrant_configure
     super
 
-    vagrant.version = options['version']
     vagrant.cookbooks_path = options['cookbooks_path']
     vagrant.run_list = options['run_list'].split(',')
     vagrant.json = json(vm, options)
