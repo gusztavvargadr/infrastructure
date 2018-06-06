@@ -62,7 +62,7 @@ class VM
     primary: false,
     memory: 1024,
     cpus: 1,
-    linked_clone: ENV['VAGRANT_LINKED_CLONE'],
+    linked_clone: ENV['VAGRANT_PROVIDER_LINKED_CLONE'],
   }
 
   def self.core(options = {})
@@ -165,9 +165,9 @@ end
 class HyperVProvider < Provider
   @@hyperv = {
     type: 'hyperv',
-    network_bridge: ENV['VAGRANT_HYPERV_NETWORK_BRIDGE'],
-    smb_username: ENV['VAGRANT_HYPERV_SMB_USERNAME'],
-    smb_password: ENV['VAGRANT_HYPERV_SMB_PASSWORD'],
+    network_bridge: ENV['VAGRANT_PROVIDER_HYPERV_NETWORK_BRIDGE'],
+    smb_username: ENV['VAGRANT_PROVIDER_HYPERV_SMB_USERNAME'],
+    smb_password: ENV['VAGRANT_PROVIDER_HYPERV_SMB_PASSWORD'],
   }
 
   def self.hyperv(options = {})
