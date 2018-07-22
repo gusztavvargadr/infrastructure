@@ -1,7 +1,7 @@
 default['gusztavvargadr_sql']['2017_ssms'] = {
   'native_packages' => {
-    'SSMS 17.6' => {
-      'source' => 'https://download.microsoft.com/download/A/F/5/AF52C08E-AF5C-41F0-8E50-2E4DE2A3A33A/SSMS-Setup-ENU.exe',
+    'SSMS 17.8.1' => {
+      'source' => 'https://download.microsoft.com/download/0/5/B/05B2AF8F-906F-4C57-A58E-5780F64F9D62/SSMS-Setup-ENU.exe',
       'install' => [
         '/install',
         '/quiet',

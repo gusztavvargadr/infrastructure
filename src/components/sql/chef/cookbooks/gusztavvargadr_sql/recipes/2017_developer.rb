@@ -1,3 +1,3 @@
 gusztavvargadr_sql_2017 'developer' do
-  action :install
+  action [:install, :patch]
 end
